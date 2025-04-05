@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,11 +12,17 @@ import { toast } from "@/components/ui/use-toast";
 import { Tables } from "@/integrations/supabase/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/context/LanguageContext";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
 
 type Expense = Tables<"expenses"> & {
   categories: Tables<"categories"> | null;
 };
 type Category = Tables<"categories">;
+
+type DateRange = {
+  from: Date | undefined;
+  to: Date | undefined;
+};
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
@@ -25,6 +30,7 @@ const Dashboard = () => {
   const { t } = useLanguage();
   
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -34,6 +40,10 @@ const Dashboard = () => {
   const [categoryId, setCategoryId] = useState("");
   const [count, setCount] = useState("1");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: undefined,
+    to: undefined
+  });
   
   // Fetch expenses and categories when the component mounts
   useEffect(() => {
@@ -48,6 +58,43 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
   
+  // Apply date filter whenever expenses or dateRange changes
+  useEffect(() => {
+    if (dateRange.from || dateRange.to) {
+      filterExpensesByDate();
+    } else {
+      setFilteredExpenses(expenses);
+    }
+  }, [expenses, dateRange]);
+  
+  const filterExpensesByDate = () => {
+    if (!dateRange.from && !dateRange.to) {
+      setFilteredExpenses(expenses);
+      return;
+    }
+    
+    const filtered = expenses.filter(expense => {
+      const expenseDate = new Date(expense.date);
+      expenseDate.setHours(0, 0, 0, 0);
+      
+      if (dateRange.from && dateRange.to) {
+        return expenseDate >= dateRange.from && expenseDate <= dateRange.to;
+      } else if (dateRange.from) {
+        return expenseDate >= dateRange.from;
+      } else if (dateRange.to) {
+        return expenseDate <= dateRange.to;
+      }
+      
+      return true;
+    });
+    
+    setFilteredExpenses(filtered);
+  };
+  
+  const handleDateRangeChange = (newDateRange: DateRange) => {
+    setDateRange(newDateRange);
+  };
+  
   const fetchExpenses = async () => {
     try {
       setIsLoadingExpenses(true);
@@ -59,6 +106,7 @@ const Dashboard = () => {
       
       if (error) throw error;
       setExpenses(data || []);
+      setFilteredExpenses(data || []);
     } catch (error: any) {
       toast({
         title: "Error fetching expenses",
@@ -232,6 +280,8 @@ const Dashboard = () => {
               <CardTitle>{t("recentExpenses")}</CardTitle>
             </CardHeader>
             <CardContent>
+              <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
+              
               {isLoadingExpenses ? (
                 <div className="space-y-2">
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -244,13 +294,13 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-              ) : expenses.length === 0 ? (
+              ) : filteredExpenses.length === 0 ? (
                 <p className="text-center py-8 text-gray-500">
                   {t("noExpenses")}
                 </p>
               ) : (
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                  {expenses.map((expense) => (
+                  {filteredExpenses.map((expense) => (
                     <div
                       key={expense.id}
                       className="flex justify-between items-center p-3 border rounded bg-white"
@@ -278,7 +328,7 @@ const Dashboard = () => {
                   {t("total")}:{" "}
                   <span className="font-bold">
                     $
-                    {expenses
+                    {filteredExpenses
                       .reduce(
                         (sum, expense) => 
                           sum + parseFloat(expense.amount.toString()) * expense.count, 
