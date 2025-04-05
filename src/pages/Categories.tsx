@@ -11,12 +11,14 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { Tables } from "@/integrations/supabase/types";
 import { Trash2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Category = Tables<"categories">;
 
 const Categories = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +123,7 @@ const Categories = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navigation />
         <div className="container mx-auto py-8 flex-1">
-          <p>Loading...</p>
+          <p>{t("loading")}</p>
         </div>
       </div>
     );
@@ -136,23 +138,23 @@ const Categories = () => {
           {/* Add Category Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Add New Category</CardTitle>
+              <CardTitle>{t("addNewCategory")}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="categoryName">Category Name</Label>
+                  <Label htmlFor="categoryName">{t("categoryName")}</Label>
                   <Input
                     id="categoryName"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Enter a category name"
+                    placeholder={t("enterCategoryName")}
                     required
                   />
                 </div>
                 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Adding..." : "Add Category"}
+                  {isSubmitting ? t("addingCategory") : t("addCategory")}
                 </Button>
               </form>
             </CardContent>
@@ -161,14 +163,14 @@ const Categories = () => {
           {/* Categories List */}
           <Card>
             <CardHeader>
-              <CardTitle>Manage Categories</CardTitle>
+              <CardTitle>{t("manageCategories")}</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <p>Loading categories...</p>
+                <p>{t("loadingCategoriesEllipsis")}</p>
               ) : categories.length === 0 ? (
                 <p className="text-center py-8 text-gray-500">
-                  No categories yet. Add your first category!
+                  {t("noCategoriesYet")}
                 </p>
               ) : (
                 <div className="space-y-2">

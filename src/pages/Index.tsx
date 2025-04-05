@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
 import { Navigation } from "@/components/Navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // If user is already logged in, redirect to dashboard
   if (user) {
@@ -53,16 +55,16 @@ const Index = () => {
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle>Galletas y Gastos</CardTitle>
+            <CardTitle>{t("appName")}</CardTitle>
             <CardDescription>
-              Track your business expenses easily
+              {t("trackExpenses")}
             </CardDescription>
           </CardHeader>
           
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+              <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
@@ -72,7 +74,7 @@ const Index = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Email"
+                      placeholder={t("email")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -82,7 +84,7 @@ const Index = () => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Password"
+                      placeholder={t("password")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -91,7 +93,7 @@ const Index = () => {
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Sign In"}
+                    {isLoading ? t("signingIn") : t("signIn")}
                   </Button>
                 </CardFooter>
               </form>
@@ -104,7 +106,7 @@ const Index = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Email"
+                      placeholder={t("email")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -114,7 +116,7 @@ const Index = () => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Password"
+                      placeholder={t("password")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -123,7 +125,7 @@ const Index = () => {
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing up..." : "Sign Up"}
+                    {isLoading ? t("signingUp") : t("signUp")}
                   </Button>
                 </CardFooter>
               </form>

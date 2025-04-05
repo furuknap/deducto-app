@@ -12,13 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/use-toast";
 import { Tables } from "@/integrations/supabase/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/context/LanguageContext";
 
-type Expense = Tables<"expenses">;
+type Expense = Tables<"expenses"> & {
+  categories: Tables<"categories"> | null;
+};
 type Category = Tables<"categories">;
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -49,7 +53,7 @@ const Dashboard = () => {
       setIsLoadingExpenses(true);
       const { data, error } = await supabase
         .from("expenses")
-        .select("*, categories(name)")
+        .select("*, categories(*)")
         .order("date", { ascending: false })
         .limit(50);
       
@@ -134,7 +138,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navigation />
         <div className="container mx-auto py-8 flex-1">
-          <p>Loading...</p>
+          <p>{t("loading")}</p>
         </div>
       </div>
     );
@@ -149,12 +153,12 @@ const Dashboard = () => {
           {/* Add Expense Form */}
           <Card className="md:col-span-1">
             <CardHeader>
-              <CardTitle>Add New Expense</CardTitle>
+              <CardTitle>{t("addNewExpense")}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Amount</Label>
+                  <Label htmlFor="amount">{t("amount")}</Label>
                   <Input
                     id="amount"
                     type="number"
@@ -167,30 +171,30 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t("description")}</Label>
                   <Input
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="What was this expense for?"
+                    placeholder={t("whatExpenseFor")}
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">{t("category")}</Label>
                   <Select value={categoryId} onValueChange={setCategoryId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder={t("selectCategory")} />
                     </SelectTrigger>
                     <SelectContent>
                       {isLoadingCategories ? (
                         <SelectItem value="loading" disabled>
-                          Loading categories...
+                          {t("loadingCategories")}
                         </SelectItem>
                       ) : categories.length === 0 ? (
                         <SelectItem value="none" disabled>
-                          No categories yet
+                          {t("noCategories")}
                         </SelectItem>
                       ) : (
                         categories.map((category) => (
@@ -204,7 +208,7 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="count">Count</Label>
+                  <Label htmlFor="count">{t("count")}</Label>
                   <Input
                     id="count"
                     type="number"
@@ -216,7 +220,7 @@ const Dashboard = () => {
                 </div>
                 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Adding..." : "Add Expense"}
+                  {isSubmitting ? t("adding") : t("addExpense")}
                 </Button>
               </form>
             </CardContent>
@@ -225,7 +229,7 @@ const Dashboard = () => {
           {/* Recent Expenses */}
           <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle>Recent Expenses</CardTitle>
+              <CardTitle>{t("recentExpenses")}</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingExpenses ? (
@@ -242,39 +246,36 @@ const Dashboard = () => {
                 </div>
               ) : expenses.length === 0 ? (
                 <p className="text-center py-8 text-gray-500">
-                  No expenses recorded yet. Add your first expense!
+                  {t("noExpenses")}
                 </p>
               ) : (
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                  {expenses.map((expense) => {
-                    const category = expense.categories as unknown as Category;
-                    return (
-                      <div
-                        key={expense.id}
-                        className="flex justify-between items-center p-3 border rounded bg-white"
-                      >
-                        <div>
-                          <p className="font-medium">{expense.description}</p>
-                          <div className="text-sm text-gray-500 flex space-x-2">
-                            <span>
-                              {new Date(expense.date).toLocaleDateString()}
-                            </span>
-                            {category && <span>• {category.name}</span>}
-                            {expense.count > 1 && <span>• Qty: {expense.count}</span>}
-                          </div>
-                        </div>
-                        <div className="font-bold">
-                          ${parseFloat(expense.amount.toString()).toFixed(2)}
+                  {expenses.map((expense) => (
+                    <div
+                      key={expense.id}
+                      className="flex justify-between items-center p-3 border rounded bg-white"
+                    >
+                      <div>
+                        <p className="font-medium">{expense.description}</p>
+                        <div className="text-sm text-gray-500 flex space-x-2">
+                          <span>
+                            {new Date(expense.date).toLocaleDateString()}
+                          </span>
+                          {expense.categories && <span>• {expense.categories.name}</span>}
+                          {expense.count > 1 && <span>• {t("qty")}: {expense.count}</span>}
                         </div>
                       </div>
-                    );
-                  })}
+                      <div className="font-bold">
+                        ${parseFloat(expense.amount.toString()).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
               
               <div className="mt-4 pt-4 border-t">
                 <p className="font-medium">
-                  Total:{" "}
+                  {t("total")}:{" "}
                   <span className="font-bold">
                     $
                     {expenses
