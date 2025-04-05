@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -98,11 +97,19 @@ export const useExpenses = (userId: string | undefined) => {
     
     // Apply date filter
     if (dateRange.from || dateRange.to) {
+      console.log("Filtering by date range:", 
+        dateRange.from ? dateRange.from.toISOString() : "none", 
+        dateRange.to ? dateRange.to.toISOString() : "none"
+      );
+      
       filtered = filtered.filter(expense => {
-        // Create date object from expense date string
+        // Parse the expense date string into a Date object
         const expenseDate = new Date(expense.date);
         
-        // For proper comparison, set both dates to midnight (start of day)
+        // For debug logging
+        console.log("Expense date:", expense.date, "Parsed as:", expenseDate.toISOString());
+        
+        // Set the expenseDate to the start of day for consistent comparison
         const expenseDateStartOfDay = new Date(
           expenseDate.getFullYear(),
           expenseDate.getMonth(),
@@ -110,17 +117,24 @@ export const useExpenses = (userId: string | undefined) => {
           0, 0, 0, 0
         );
         
-        // Handle the comparison for from and to dates
+        // If we have both from and to dates
         if (dateRange.from && dateRange.to) {
-          // For proper comparison, set the 'to' date to end of day (23:59:59.999)
+          // We need to make the 'to' date inclusive by setting it to end of day
           const toDateEndOfDay = new Date(dateRange.to);
           toDateEndOfDay.setHours(23, 59, 59, 999);
           
-          return expenseDateStartOfDay >= dateRange.from && expenseDateStartOfDay <= toDateEndOfDay;
+          const isInRange = expenseDateStartOfDay >= dateRange.from && expenseDateStartOfDay <= toDateEndOfDay;
+          console.log("Is in range:", isInRange, 
+            "From:", dateRange.from.toISOString(), 
+            "Expense:", expenseDateStartOfDay.toISOString(), 
+            "To:", toDateEndOfDay.toISOString()
+          );
+          
+          return isInRange;
         } else if (dateRange.from) {
           return expenseDateStartOfDay >= dateRange.from;
         } else if (dateRange.to) {
-          // For proper comparison, set the 'to' date to end of day (23:59:59.999)
+          // Make the 'to' date inclusive by setting it to end of day
           const toDateEndOfDay = new Date(dateRange.to);
           toDateEndOfDay.setHours(23, 59, 59, 999);
           
@@ -176,4 +190,3 @@ export const useExpenses = (userId: string | undefined) => {
     handleCategoryChange
   };
 };
-

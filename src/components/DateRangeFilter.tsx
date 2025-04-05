@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,9 +24,12 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
   });
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
-  // Get today's date at the start of the day (midnight)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Create today's date at the start of the day (midnight)
+  const getToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  };
 
   const getFirstDayOfWeek = (date: Date) => {
     const day = date.getDay();
@@ -55,10 +57,16 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
     setActiveFilter(filter);
     let range: DateRange = { from: undefined, to: undefined };
 
+    // Get a fresh today date for each filter click
+    const today = getToday();
+
     switch (filter) {
       case "today":
-        // Both from and to are set to today at midnight (start of day)
-        range = { from: new Date(today), to: new Date(today) };
+        // Create new Date objects for today to ensure they're distinct references
+        range = { 
+          from: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0), 
+          to: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
+        };
         break;
       case "this-week":
         range = { from: getFirstDayOfWeek(today), to: new Date(today) };
@@ -175,4 +183,3 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
     </div>
   );
 };
-
