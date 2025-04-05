@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,10 +82,10 @@ export const ExpenseForm = ({
         <Input
           id="amount"
           type="number"
-          step="0.01"
+          step="100"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="0.00"
+          placeholder="0"
           required
         />
       </div>
