@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,6 @@ const Dashboard = () => {
     to: undefined
   });
   
-  // Fetch expenses and categories when the component mounts
   useEffect(() => {
     if (!loading && !user) {
       navigate("/");
@@ -59,7 +57,6 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
   
-  // Apply date filter whenever expenses or dateRange changes
   useEffect(() => {
     if (dateRange.from || dateRange.to) {
       filterExpensesByDate();
@@ -148,13 +145,8 @@ const Dashboard = () => {
     try {
       setIsSubmitting(true);
       
-      // Create a date object with the current local date and format it
-      // This ensures we use the exact local date without timezone issues
       const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      const formattedDate = `${year}-${month}-${day}`;
+      const formattedDate = today.toISOString().split('T')[0];
       
       const { error } = await supabase.from("expenses").insert({
         user_id: user.id,
@@ -162,7 +154,7 @@ const Dashboard = () => {
         description,
         category_id: categoryId || null,
         count: parseInt(count),
-        date: formattedDate, // Using formatted local date
+        date: formattedDate,
       });
       
       if (error) throw error;
@@ -172,13 +164,11 @@ const Dashboard = () => {
         description: "Your expense has been successfully recorded",
       });
       
-      // Reset form
       setAmount("");
       setDescription("");
       setCategoryId("");
       setCount("1");
       
-      // Refresh expenses
       fetchExpenses();
     } catch (error: any) {
       toast({
@@ -208,7 +198,6 @@ const Dashboard = () => {
       
       <div className="container mx-auto py-8 px-4 flex-1">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Add Expense Form */}
           <Card className="md:col-span-1">
             <CardHeader>
               <CardTitle>{t("addNewExpense")}</CardTitle>
@@ -284,7 +273,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          {/* Recent Expenses */}
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>{t("recentExpenses")}</CardTitle>
