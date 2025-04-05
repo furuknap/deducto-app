@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -298,26 +299,33 @@ const Dashboard = () => {
                 </p>
               ) : (
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                  {filteredExpenses.map((expense) => (
-                    <div
-                      key={expense.id}
-                      className="flex justify-between items-center p-3 border rounded bg-white"
-                    >
-                      <div>
-                        <p className="font-medium">{expense.description}</p>
-                        <div className="text-sm text-gray-500 flex space-x-2">
-                          <span>
-                            {new Date(expense.date).toLocaleDateString()}
-                          </span>
-                          {expense.categories && <span>• {expense.categories.name}</span>}
-                          {expense.count > 1 && <span>• {t("qty")}: {expense.count}</span>}
+                  {filteredExpenses.map((expense) => {
+                    // Convert the stored date to a Date object with the correct timezone handling
+                    const expenseDate = new Date(expense.date);
+                    // Add a day to adjust for timezone issues in display
+                    // expenseDate.setDate(expenseDate.getDate());
+                    
+                    return (
+                      <div
+                        key={expense.id}
+                        className="flex justify-between items-center p-3 border rounded bg-white"
+                      >
+                        <div>
+                          <p className="font-medium">{expense.description}</p>
+                          <div className="text-sm text-gray-500 flex space-x-2">
+                            <span>
+                              {expenseDate.toLocaleDateString()}
+                            </span>
+                            {expense.categories && <span>• {expense.categories.name}</span>}
+                            {expense.count > 1 && <span>• {t("qty")}: {expense.count}</span>}
+                          </div>
+                        </div>
+                        <div className="font-bold">
+                          ${parseFloat(expense.amount.toString()).toFixed(2)}
                         </div>
                       </div>
-                      <div className="font-bold">
-                        ${parseFloat(expense.amount.toString()).toFixed(2)}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
               
