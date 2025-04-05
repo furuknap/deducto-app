@@ -17,16 +17,17 @@ type CategoryTotal = {
   color: string;
 };
 
+// More distinct colors with better contrast
 const COLORS = [
-  "#9b87f5", // Primary Purple
   "#8B5CF6", // Vivid Purple
-  "#0EA5E9", // Ocean Blue
   "#F97316", // Bright Orange
-  "#D946EF", // Magenta Pink
+  "#0EA5E9", // Ocean Blue
+  "#D946EF", // Magenta Pink 
   "#ea384c", // Red
-  "#7E69AB", // Secondary Purple
-  "#D6BCFA", // Light Purple
-  "#33C3F0", // Sky Blue
+  "#34d399", // Green
+  "#f59e0b", // Amber
+  "#06b6d4", // Cyan
+  "#6366f1", // Indigo
 ];
 
 interface ExpenseChartProps {
@@ -78,6 +79,13 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
     return `$${value.toFixed(2)}`;
   };
 
+  // Calculate percentages for each category
+  const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
+  const dataWithPercentage = chartData.map(item => ({
+    ...item,
+    percentage: totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0
+  }));
+
   if (isLoading) {
     return (
       <Card>
@@ -110,26 +118,47 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
         <CardTitle>{t("expensesByCategory")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
-          <ChartContainer config={chartConfig}>
-            <PieChart margin={{ top: 0, right: 0, bottom: 30, left: 0 }}>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="40%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+        <div className="flex flex-col md:flex-row h-[300px] w-full">
+          {/* Pie chart on the left */}
+          <div className="w-full md:w-1/2">
+            <ChartContainer config={chartConfig}>
+              <PieChart width={300} height={250}>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<ChartTooltipContent formatter={formatTooltipValue} />} />
+              </PieChart>
+            </ChartContainer>
+          </div>
+          
+          {/* Legend on the right with percentages */}
+          <div className="w-full md:w-1/2 flex items-center">
+            <div className="w-full">
+              <ul className="space-y-2">
+                {dataWithPercentage.map((item, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <span 
+                      className="block w-4 h-4 rounded-full" 
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm">
+                      {item.name} ({item.percentage}%) - ${item.value.toFixed(2)}
+                    </span>
+                  </li>
                 ))}
-              </Pie>
-              <Tooltip content={<ChartTooltipContent formatter={formatTooltipValue} />} />
-              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
-            </PieChart>
-          </ChartContainer>
+              </ul>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
