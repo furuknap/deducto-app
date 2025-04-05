@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -78,6 +79,22 @@ const translations = {
     expensesByCategory: "Expenses by Category",
     noExpensesToDisplay: "No expenses to display",
     uncategorized: "Uncategorized",
+    // Date filter translations
+    allTime: "All Time",
+    today: "Today",
+    thisWeek: "This Week",
+    thisMonth: "This Month",
+    previous7Days: "Last 7 Days",
+    previous30Days: "Last 30 Days",
+    customDateRange: "Custom Date Range",
+    expenseAdded: "Expense Added",
+    expenseSuccessfullyRecorded: "Expense successfully recorded",
+    errorAddingExpense: "Error Adding Expense",
+    whatExpenseFor: "What is this expense for?",
+    selectCategory: "Select a category",
+    loadingCategories: "Loading categories...",
+    adding: "Adding...",
+    count: "Count"
   },
   es: {
     welcome: "Bienvenido",
@@ -116,5 +133,21 @@ const translations = {
     expensesByCategory: "Gastos por Categoría",
     noExpensesToDisplay: "No hay gastos para mostrar",
     uncategorized: "Sin categoría",
+    // Date filter translations
+    allTime: "Todo el Tiempo",
+    today: "Hoy",
+    thisWeek: "Esta Semana",
+    thisMonth: "Este Mes",
+    previous7Days: "Últimos 7 Días",
+    previous30Days: "Últimos 30 Días",
+    customDateRange: "Rango de Fechas Personalizado",
+    expenseAdded: "Gasto Agregado",
+    expenseSuccessfullyRecorded: "Gasto registrado exitosamente",
+    errorAddingExpense: "Error al Agregar Gasto",
+    whatExpenseFor: "¿Para qué es este gasto?",
+    selectCategory: "Seleccione una categoría",
+    loadingCategories: "Cargando categorías...",
+    adding: "Agregando...",
+    count: "Cantidad"
   },
 };
