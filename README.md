@@ -1,73 +1,142 @@
-# Welcome to your Lovable project
 
-## Project info
+# Deducto - Expense Tracking Application
 
-**URL**: https://lovable.dev/projects/70f85b6a-5aad-4415-846a-146de3e46fd6
+Deducto is a bilingual (English/Spanish) expense tracking application that helps you monitor and manage your personal or business expenses. Track spending across different categories, view expense breakdowns, and gain insights into your financial habits.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Expense Tracking**: Record and manage your expenses with descriptions, amounts, and categories
+- **Category Management**: Create and organize custom expense categories
+- **Dashboard Visualization**: View expense breakdowns with intuitive charts
+- **Bilingual Support**: Full English and Spanish language support
+- **User Authentication**: Secure login and registration system
+- **Responsive Design**: Works on desktop and mobile devices
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/70f85b6a-5aad-4415-846a-146de3e46fd6) and start prompting.
+- **Frontend**: React, TypeScript, Vite
+- **UI Components**: shadcn/ui, Tailwind CSS
+- **Authentication**: Supabase Auth
+- **Database**: Supabase Postgres
+- **Data Visualization**: Recharts
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16 or higher)
+- npm or another package manager
+- A Supabase account
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Setting Up Supabase
 
-Follow these steps:
+1. **Create a Supabase Account**:
+   - Go to [https://supabase.com](https://supabase.com) and sign up for a free account
+   - Create a new project and note your project URL and anon/public key
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Set Up Database Tables**:
+   - In the Supabase dashboard, navigate to the SQL Editor
+   - Create the necessary tables by running the following SQL:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+   ```sql
+   -- Create categories table
+   CREATE TABLE public.categories (
+     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+     name TEXT NOT NULL,
+     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+   );
 
-# Step 3: Install the necessary dependencies.
-npm i
+   -- Create expenses table
+   CREATE TABLE public.expenses (
+     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+     description TEXT NOT NULL,
+     amount NUMERIC NOT NULL,
+     category_id UUID REFERENCES public.categories(id),
+     date DATE NOT NULL DEFAULT CURRENT_DATE,
+     count INTEGER NOT NULL DEFAULT 1,
+     user_id UUID NOT NULL,
+     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+   );
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+   -- Enable Row Level Security
+   ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
 
-**Edit a file directly in GitHub**
+   -- Create RLS policies for expenses
+   CREATE POLICY "Users can view their own expenses"
+     ON public.expenses
+     FOR SELECT
+     USING (auth.uid() = user_id);
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+   CREATE POLICY "Users can create their own expenses"
+     ON public.expenses
+     FOR INSERT
+     WITH CHECK (auth.uid() = user_id);
 
-**Use GitHub Codespaces**
+   CREATE POLICY "Users can update their own expenses"
+     ON public.expenses
+     FOR UPDATE
+     USING (auth.uid() = user_id);
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+   CREATE POLICY "Users can delete their own expenses"
+     ON public.expenses
+     FOR DELETE
+     USING (auth.uid() = user_id);
+   ```
 
-## What technologies are used for this project?
+3. **Configure Authentication**:
+   - In the Supabase dashboard, go to Authentication → Settings
+   - Configure Email Auth (recommended: disable email confirmation for testing)
+   - Set up any additional authentication providers if needed
 
-This project is built with:
+### Local Development
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. **Clone the repository**:
+   ```sh
+   git clone <your-repo-url>
+   cd deducto
+   ```
 
-## How can I deploy this project?
+2. **Install dependencies**:
+   ```sh
+   npm install
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/70f85b6a-5aad-4415-846a-146de3e46fd6) and click on Share -> Publish.
+3. **Update Supabase Configuration**:
+   - Locate the `src/integrations/supabase/client.ts` file
+   - Replace the Supabase URL and anon key with your own values from your Supabase project
 
-## Can I connect a custom domain to my Lovable project?
+4. **Start the development server**:
+   ```sh
+   npm run dev
+   ```
 
-Yes it is!
+5. **Open your browser**:
+   Navigate to `http://localhost:5173` to see the application running.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Usage
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. **Create an Account**: Sign up with your email and password
+2. **Add Categories**: Set up expense categories that make sense for your budget
+3. **Record Expenses**: Add new expenses with descriptions, amounts, and categories
+4. **View Analytics**: Use the dashboard to see spending patterns and breakdowns
+
+## Deployment
+
+To deploy this project:
+
+1. Build the production version:
+   ```sh
+   npm run build
+   ```
+
+2. Deploy the contents of the `dist` directory to your preferred hosting service (Netlify, Vercel, GitHub Pages, etc.)
+
+3. Ensure your Supabase project is properly configured for production use:
+   - Review and restrict CORS settings
+   - Enable email confirmation for authentication
+   - Set up additional security as needed
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
