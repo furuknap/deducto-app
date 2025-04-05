@@ -72,7 +72,7 @@ const Dashboard = () => {
               <CardTitle>{t("recentExpenses")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+              <div className="flex flex-col gap-4 mb-4">
                 <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
                 <CategoryFilter 
                   expenses={filteredExpenses}

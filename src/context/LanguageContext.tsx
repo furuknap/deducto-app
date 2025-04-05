@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -49,6 +48,7 @@ const translations: Translations = {
     previous7Days: "Previous 7 Days",
     previous30Days: "Previous 30 Days",
     customDateRange: "Custom Date Range",
+    allCategories: "All Categories",
   },
   es: {
     appName: "Rastreador de Gastos",
@@ -85,6 +85,7 @@ const translations: Translations = {
     previous7Days: "Últimos 7 Días",
     previous30Days: "Últimos 30 Días",
     customDateRange: "Rango de Fecha Personalizado",
+    allCategories: "Todas las Categorías",
   },
 };
 

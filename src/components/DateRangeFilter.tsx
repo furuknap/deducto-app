@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -91,8 +92,8 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
   };
 
   return (
-    <div className="space-y-4 mb-4">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <Button
           size="sm"
           variant={activeFilter === "all" ? "default" : "outline"}
@@ -137,7 +138,7 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
         </Button>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex flex-col space-y-4">
         <Popover>
           <PopoverTrigger asChild>
             <Button
