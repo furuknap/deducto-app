@@ -148,9 +148,13 @@ const Dashboard = () => {
     try {
       setIsSubmitting(true);
       
-      // Get today's date in ISO format, making sure it uses the current date
+      // Create a date object with the current local date and format it
+      // This ensures we use the exact local date without timezone issues
       const today = new Date();
-      const isoDate = today.toISOString().split('T')[0];
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
       
       const { error } = await supabase.from("expenses").insert({
         user_id: user.id,
@@ -158,7 +162,7 @@ const Dashboard = () => {
         description,
         category_id: categoryId || null,
         count: parseInt(count),
-        date: isoDate, // Explicitly set today's date
+        date: formattedDate, // Using formatted local date
       });
       
       if (error) throw error;
