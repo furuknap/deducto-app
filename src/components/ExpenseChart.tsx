@@ -1,6 +1,6 @@
 
 import React, { useMemo } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { Tables } from "@/integrations/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,13 +110,13 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
         <CardTitle>{t("expensesByCategory")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig}>
-            <PieChart>
+            <PieChart margin={{ top: 0, right: 0, bottom: 30, left: 0 }}>
               <Pie
                 data={chartData}
                 cx="50%"
-                cy="50%"
+                cy="40%"
                 labelLine={false}
                 outerRadius={80}
                 fill="#8884d8"
@@ -127,7 +127,7 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
                 ))}
               </Pie>
               <Tooltip content={<ChartTooltipContent formatter={formatTooltipValue} />} />
-              <Legend />
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
             </PieChart>
           </ChartContainer>
         </div>
