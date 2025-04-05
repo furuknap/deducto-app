@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -43,6 +42,7 @@ export const useLanguage = () => {
 
 const translations = {
   en: {
+    appName: "Deducto",
     welcome: "Welcome",
     login: "Login",
     logout: "Logout",
@@ -97,6 +97,7 @@ const translations = {
     count: "Count"
   },
   es: {
+    appName: "Deducto",
     welcome: "Bienvenido",
     login: "Iniciar sesión",
     logout: "Cerrar sesión",
