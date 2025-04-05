@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Navigation } from "@/components/Navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { CategoryFilter } from "@/components/CategoryFilter";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { ExpenseList } from "@/components/ExpenseList";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -21,8 +22,10 @@ const Dashboard = () => {
     isLoadingExpenses,
     isLoadingCategories,
     totalAmount,
+    selectedCategoryId,
     fetchExpenses,
-    handleDateRangeChange
+    handleDateRangeChange,
+    handleCategoryChange
   } = useExpenses(user?.id);
   
   useEffect(() => {
@@ -69,7 +72,15 @@ const Dashboard = () => {
               <CardTitle>{t("recentExpenses")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+                <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
+                <CategoryFilter 
+                  expenses={filteredExpenses}
+                  categories={categories}
+                  selectedCategoryId={selectedCategoryId}
+                  onCategoryChange={handleCategoryChange}
+                />
+              </div>
               
               <ExpenseList 
                 expenses={filteredExpenses}

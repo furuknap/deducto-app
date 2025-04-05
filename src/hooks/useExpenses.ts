@@ -25,6 +25,7 @@ export const useExpenses = (userId: string | undefined) => {
     from: undefined,
     to: undefined
   });
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   const totalAmount = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.amount.toString()) * expense.count, 
@@ -39,12 +40,8 @@ export const useExpenses = (userId: string | undefined) => {
   }, [userId]);
 
   useEffect(() => {
-    if (dateRange.from || dateRange.to) {
-      filterExpensesByDate();
-    } else {
-      setFilteredExpenses(expenses);
-    }
-  }, [expenses, dateRange]);
+    filterExpenses();
+  }, [expenses, dateRange, selectedCategoryId]);
 
   const fetchExpenses = async () => {
     try {
@@ -90,32 +87,43 @@ export const useExpenses = (userId: string | undefined) => {
     }
   };
 
-  const filterExpensesByDate = () => {
-    if (!dateRange.from && !dateRange.to) {
-      setFilteredExpenses(expenses);
-      return;
+  const filterExpenses = () => {
+    let filtered = [...expenses];
+    
+    // Apply date filter
+    if (dateRange.from || dateRange.to) {
+      filtered = filtered.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        expenseDate.setHours(0, 0, 0, 0);
+        
+        if (dateRange.from && dateRange.to) {
+          return expenseDate >= dateRange.from && expenseDate <= dateRange.to;
+        } else if (dateRange.from) {
+          return expenseDate >= dateRange.from;
+        } else if (dateRange.to) {
+          return expenseDate <= dateRange.to;
+        }
+        
+        return true;
+      });
     }
     
-    const filtered = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      expenseDate.setHours(0, 0, 0, 0);
-      
-      if (dateRange.from && dateRange.to) {
-        return expenseDate >= dateRange.from && expenseDate <= dateRange.to;
-      } else if (dateRange.from) {
-        return expenseDate >= dateRange.from;
-      } else if (dateRange.to) {
-        return expenseDate <= dateRange.to;
-      }
-      
-      return true;
-    });
+    // Apply category filter
+    if (selectedCategoryId) {
+      filtered = filtered.filter(expense => 
+        expense.category_id === selectedCategoryId
+      );
+    }
     
     setFilteredExpenses(filtered);
   };
 
   const handleDateRangeChange = (newDateRange: DateRange) => {
     setDateRange(newDateRange);
+  };
+
+  const handleCategoryChange = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
   };
 
   return {
@@ -125,8 +133,10 @@ export const useExpenses = (userId: string | undefined) => {
     isLoadingExpenses,
     isLoadingCategories,
     totalAmount,
+    selectedCategoryId,
     fetchExpenses,
     fetchCategories,
-    handleDateRangeChange
+    handleDateRangeChange,
+    handleCategoryChange
   };
 };
