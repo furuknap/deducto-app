@@ -9,6 +9,7 @@ import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { ExpenseList } from "@/components/ExpenseList";
+import { ExpenseChart } from "@/components/ExpenseChart";
 import { useExpenses } from "@/hooks/useExpenses";
 
 const Dashboard = () => {
@@ -68,28 +69,35 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>{t("recentExpenses")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-4 mb-4">
-                <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
-                <CategoryFilter 
-                  expenses={dateFilteredExpenses}
-                  categories={categories}
-                  selectedCategoryId={selectedCategoryId}
-                  onCategoryChange={handleCategoryChange}
+          <div className="md:col-span-2 flex flex-col gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("recentExpenses")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4 mb-4">
+                  <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
+                  <CategoryFilter 
+                    expenses={dateFilteredExpenses}
+                    categories={categories}
+                    selectedCategoryId={selectedCategoryId}
+                    onCategoryChange={handleCategoryChange}
+                  />
+                </div>
+                
+                <ExpenseList 
+                  expenses={filteredExpenses}
+                  isLoading={isLoadingExpenses}
+                  totalAmount={totalAmount}
                 />
-              </div>
-              
-              <ExpenseList 
-                expenses={filteredExpenses}
-                isLoading={isLoadingExpenses}
-                totalAmount={totalAmount}
-              />
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+            
+            <ExpenseChart 
+              expenses={filteredExpenses}
+              isLoading={isLoadingExpenses}
+            />
+          </div>
         </div>
       </div>
     </div>
