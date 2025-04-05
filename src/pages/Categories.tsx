@@ -49,7 +49,7 @@ const Categories = () => {
       setCategories(data || []);
     } catch (error: any) {
       toast({
-        title: "Error fetching categories",
+        title: t("errorFetchingCategories"),
         description: error.message,
         variant: "destructive",
       });
@@ -73,8 +73,8 @@ const Categories = () => {
       if (error) throw error;
       
       toast({
-        title: "Category added",
-        description: "Your category has been successfully added",
+        title: t("categoryAdded"),
+        description: t("categorySuccessfullyAdded"),
       });
       
       // Reset form
@@ -84,7 +84,7 @@ const Categories = () => {
       fetchCategories();
     } catch (error: any) {
       toast({
-        title: "Error adding category",
+        title: t("errorAddingCategory"),
         description: error.message,
         variant: "destructive",
       });
@@ -103,15 +103,15 @@ const Categories = () => {
       if (error) throw error;
       
       toast({
-        title: "Category deleted",
-        description: "The category has been successfully deleted",
+        title: t("categoryDeleted"),
+        description: t("categorySuccessfullyDeleted"),
       });
       
       // Refresh categories
       fetchCategories();
     } catch (error: any) {
       toast({
-        title: "Error deleting category",
+        title: t("errorDeletingCategory"),
         description: error.message,
         variant: "destructive",
       });
@@ -167,10 +167,10 @@ const Categories = () => {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <p>{t("loadingCategoriesEllipsis")}</p>
+                <p>{t("loadingCategories")}</p>
               ) : categories.length === 0 ? (
                 <p className="text-center py-8 text-gray-500">
-                  {t("noCategoriesYet")}
+                  {t("noCategories")}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -184,6 +184,7 @@ const Categories = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteCategory(category.id)}
+                        aria-label={t("deleteCategory")}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
