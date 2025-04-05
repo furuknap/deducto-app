@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { toast } from "@/components/ui/use-toast";
+import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 type Expense = Tables<"expenses"> & {
   categories: Tables<"categories"> | null;
@@ -95,7 +97,6 @@ export const useExpenses = (userId: string | undefined) => {
   const applyDateFilter = () => {
     let filtered = [...expenses];
     
-    // Apply date filter
     if (dateRange.from || dateRange.to) {
       console.log("Filtering by date range:", 
         dateRange.from ? dateRange.from.toISOString() : "none", 
@@ -103,42 +104,37 @@ export const useExpenses = (userId: string | undefined) => {
       );
       
       filtered = filtered.filter(expense => {
-        // Parse the expense date string into a Date object
-        const expenseDate = new Date(expense.date);
+        // We need to handle the date string from the database correctly
+        // First, ensure we have a clean date string (no timezone info)
+        const dateString = expense.date.toString().split('T')[0];
         
-        // For debug logging
-        console.log("Expense date:", expense.date, "Parsed as:", expenseDate.toISOString());
+        // Create a date object in local timezone
+        const expenseDate = parseISO(dateString);
         
-        // Set the expenseDate to the start of day for consistent comparison
-        const expenseDateStartOfDay = new Date(
-          expenseDate.getFullYear(),
-          expenseDate.getMonth(),
-          expenseDate.getDate(),
-          0, 0, 0, 0
-        );
+        console.log("Expense date (raw):", expense.date, "Parsed as local:", expenseDate.toISOString());
         
-        // If we have both from and to dates
+        // To ensure proper comparison, get start of day
+        const expenseDateStart = startOfDay(expenseDate);
+        
         if (dateRange.from && dateRange.to) {
-          // We need to make the 'to' date inclusive by setting it to end of day
-          const toDateEndOfDay = new Date(dateRange.to);
-          toDateEndOfDay.setHours(23, 59, 59, 999);
+          // Get start of "from" day and end of "to" day
+          const fromDate = startOfDay(dateRange.from);
+          const toDate = endOfDay(dateRange.to);
           
-          const isInRange = expenseDateStartOfDay >= dateRange.from && expenseDateStartOfDay <= toDateEndOfDay;
-          console.log("Is in range:", isInRange, 
-            "From:", dateRange.from.toISOString(), 
-            "Expense:", expenseDateStartOfDay.toISOString(), 
-            "To:", toDateEndOfDay.toISOString()
+          const isInRange = expenseDateStart >= fromDate && expenseDateStart <= toDate;
+          
+          console.log("Date comparison:", 
+            "Is in range:", isInRange,
+            "From:", fromDate.toISOString(), 
+            "Expense:", expenseDateStart.toISOString(), 
+            "To:", toDate.toISOString()
           );
           
           return isInRange;
         } else if (dateRange.from) {
-          return expenseDateStartOfDay >= dateRange.from;
+          return expenseDateStart >= startOfDay(dateRange.from);
         } else if (dateRange.to) {
-          // Make the 'to' date inclusive by setting it to end of day
-          const toDateEndOfDay = new Date(dateRange.to);
-          toDateEndOfDay.setHours(23, 59, 59, 999);
-          
-          return expenseDateStartOfDay <= toDateEndOfDay;
+          return expenseDateStart <= endOfDay(dateRange.to);
         }
         
         return true;

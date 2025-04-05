@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, startOfDay, endOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -24,11 +25,9 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
   });
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
-  // Create today's date at the start of the day (midnight)
+  // Get the current date in local timezone
   const getToday = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
+    return new Date();
   };
 
   const getFirstDayOfWeek = (date: Date) => {
@@ -36,21 +35,18 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
     const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
     const firstDay = new Date(date);
     firstDay.setDate(diff);
-    firstDay.setHours(0, 0, 0, 0);
-    return firstDay;
+    return startOfDay(firstDay);
   };
 
   const getFirstDayOfMonth = (date: Date) => {
     const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    firstDay.setHours(0, 0, 0, 0);
-    return firstDay;
+    return startOfDay(firstDay);
   };
 
   const getPreviousDaysStart = (days: number) => {
     const date = new Date();
     date.setDate(date.getDate() - days);
-    date.setHours(0, 0, 0, 0);
-    return date;
+    return startOfDay(date);
   };
 
   const handleFilterClick = (filter: string) => {
@@ -62,23 +58,22 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
 
     switch (filter) {
       case "today":
-        // Create new Date objects for today to ensure they're distinct references
-        range = { 
-          from: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0), 
-          to: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
-        };
+        // Use the same date for both from and to, but set from to start of day and to to end of day
+        const todayStart = startOfDay(today);
+        const todayEnd = endOfDay(today);
+        range = { from: todayStart, to: todayEnd };
         break;
       case "this-week":
-        range = { from: getFirstDayOfWeek(today), to: new Date(today) };
+        range = { from: getFirstDayOfWeek(today), to: endOfDay(today) };
         break;
       case "this-month":
-        range = { from: getFirstDayOfMonth(today), to: new Date(today) };
+        range = { from: getFirstDayOfMonth(today), to: endOfDay(today) };
         break;
       case "previous-7":
-        range = { from: getPreviousDaysStart(7), to: new Date(today) };
+        range = { from: getPreviousDaysStart(7), to: endOfDay(today) };
         break;
       case "previous-30":
-        range = { from: getPreviousDaysStart(30), to: new Date(today) };
+        range = { from: getPreviousDaysStart(30), to: endOfDay(today) };
         break;
       case "custom":
         // Keep existing custom date range
@@ -94,11 +89,36 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
   };
 
   const handleCustomDateChange = (range: DateRange) => {
-    setDateRange(range);
-    if (range.from && range.to) {
-      setActiveFilter("custom");
-      onDateRangeChange(range);
+    // When selecting custom dates, set from to start of day and to to end of day
+    let updatedRange = range;
+    
+    if (range.from) {
+      updatedRange = { 
+        ...updatedRange, 
+        from: startOfDay(range.from) 
+      };
     }
+    
+    if (range.to) {
+      updatedRange = { 
+        ...updatedRange, 
+        to: endOfDay(range.to) 
+      };
+    }
+    
+    setDateRange(updatedRange);
+    if (updatedRange.from && updatedRange.to) {
+      setActiveFilter("custom");
+      onDateRangeChange(updatedRange);
+    }
+  };
+
+  // For display purposes only - show dates in a user-friendly format
+  const getDisplayDateRange = () => {
+    if (dateRange.from && dateRange.to) {
+      return `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`;
+    }
+    return t("customDateRange");
   };
 
   return (
@@ -156,13 +176,7 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
               className="justify-start text-left font-normal"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange.from && dateRange.to ? (
-                <>
-                  {format(dateRange.from, "PPP")} - {format(dateRange.to, "PPP")}
-                </>
-              ) : (
-                <span>{t("customDateRange")}</span>
-              )}
+              {getDisplayDateRange()}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
