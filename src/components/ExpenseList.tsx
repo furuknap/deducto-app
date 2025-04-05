@@ -2,6 +2,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tables } from "@/integrations/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
+import { format, parseISO } from "date-fns";
 
 type Expense = Tables<"expenses"> & {
   categories: Tables<"categories"> | null;
@@ -44,8 +45,9 @@ export const ExpenseList = ({ expenses, isLoading, totalAmount }: ExpenseListPro
     <>
       <div className="space-y-2 max-h-[500px] overflow-y-auto">
         {expenses.map((expense) => {
-          // Convert the stored date to a Date object
-          const expenseDate = new Date(expense.date);
+          // Format the date string from the database to display correctly
+          // This ensures we display the date as stored in the database without timezone conversion
+          const formattedDate = format(parseISO(expense.date), 'MMM dd, yyyy');
           
           return (
             <div
@@ -55,9 +57,7 @@ export const ExpenseList = ({ expenses, isLoading, totalAmount }: ExpenseListPro
               <div>
                 <p className="font-medium">{expense.description}</p>
                 <div className="text-sm text-gray-500 flex space-x-2">
-                  <span>
-                    {expenseDate.toLocaleDateString()}
-                  </span>
+                  <span>{formattedDate}</span>
                   {expense.categories && <span>• {expense.categories.name}</span>}
                   {expense.count > 1 && <span>• {t("qty")}: {expense.count}</span>}
                 </div>
