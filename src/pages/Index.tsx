@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,6 +89,14 @@ const Index = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    <div className="text-right">
+                      <Link 
+                        to="/reset-password" 
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {t("forgotPassword")}
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter>

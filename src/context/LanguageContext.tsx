@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -116,7 +115,31 @@ const translations = {
     password: "Password",
     signingIn: "Signing In...",
     signingUp: "Signing Up...",
-    trackExpenses: "Track and manage your expenses"
+    trackExpenses: "Track and manage your expenses",
+    // Password reset translations
+    resetPassword: "Reset Password",
+    resetPasswordDescription: "Enter your email to receive a password reset link",
+    sendResetLink: "Send Reset Link",
+    sendingResetLink: "Sending...",
+    resetEmailSent: "Reset Email Sent",
+    checkYourEmail: "Please check your email for the reset link",
+    resetLinkSent: "A password reset link has been sent to your email",
+    sendAnotherLink: "Send Another Link",
+    resetError: "Reset Error",
+    
+    // Update password translations
+    updatePassword: "Update Password",
+    createNewPassword: "Create a new password for your account",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
+    passwordsDoNotMatch: "Passwords do not match",
+    updatingPassword: "Updating...",
+    passwordUpdated: "Password Updated",
+    passwordUpdateSuccess: "Your password has been successfully updated",
+    updatePasswordError: "Error Updating Password",
+    
+    // Forgot password link
+    forgotPassword: "Forgot password?",
   },
   es: {
     appName: "Deducto",
@@ -192,7 +215,30 @@ const translations = {
     password: "Contraseña",
     signingIn: "Iniciando Sesión...",
     signingUp: "Registrando...",
-    trackExpenses: "Rastrea y administra tus gastos"
-  },
+    trackExpenses: "Rastrea y administra tus gastos",
+    // Password reset translations
+    resetPassword: "Restablecer Contraseña",
+    resetPasswordDescription: "Ingrese su correo electrónico para recibir un enlace de restablecimiento de contraseña",
+    sendResetLink: "Enviar Enlace",
+    sendingResetLink: "Enviando...",
+    resetEmailSent: "Correo Enviado",
+    checkYourEmail: "Por favor, revise su correo electrónico para ver el enlace de restablecimiento",
+    resetLinkSent: "Se ha enviado un enlace de restablecimiento de contraseña a su correo electrónico",
+    sendAnotherLink: "Enviar Otro Enlace",
+    resetError: "Error de Restablecimiento",
+    
+    // Update password translations
+    updatePassword: "Actualizar Contraseña",
+    createNewPassword: "Cree una nueva contraseña para su cuenta",
+    newPassword: "Nueva Contraseña",
+    confirmPassword: "Confirmar Contraseña",
+    passwordsDoNotMatch: "Las contraseñas no coinciden",
+    updatingPassword: "Actualizando...",
+    passwordUpdated: "Contraseña Actualizada",
+    passwordUpdateSuccess: "Su contraseña ha sido actualizada con éxito",
+    updatePasswordError: "Error al Actualizar la Contraseña",
+    
+    // Forgot password link
+    forgotPassword: "¿Olvidó su contraseña?",
+  }
 };
-
