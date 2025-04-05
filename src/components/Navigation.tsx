@@ -33,7 +33,7 @@ export function Navigation() {
         
         {user ? (
           <Button onClick={signOut} variant="outline">
-            {t("signOut")}
+            {t("logout")}
           </Button>
         ) : (
           <span className="text-sm text-gray-500">
