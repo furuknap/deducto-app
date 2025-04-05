@@ -92,7 +92,6 @@ const translations = {
     expensesByCategory: "Expenses by Category",
     noExpensesToDisplay: "No expenses to display",
     uncategorized: "Uncategorized",
-    // Date filter translations
     allTime: "All Time",
     today: "Today",
     thisWeek: "This Week",
@@ -108,7 +107,6 @@ const translations = {
     loadingCategoriesEllipsis: "Loading categories...",
     adding: "Adding...",
     count: "Count",
-    // Sign in/up translations
     signIn: "Sign In",
     signUp: "Sign Up",
     email: "Email",
@@ -116,7 +114,6 @@ const translations = {
     signingIn: "Signing In...",
     signingUp: "Signing Up...",
     trackExpenses: "Track and manage your expenses",
-    // Password reset translations
     resetPassword: "Reset Password",
     resetPasswordDescription: "Enter your email to receive a password reset link",
     sendResetLink: "Send Reset Link",
@@ -126,8 +123,6 @@ const translations = {
     resetLinkSent: "A password reset link has been sent to your email",
     sendAnotherLink: "Send Another Link",
     resetError: "Reset Error",
-    
-    // Update password translations
     updatePassword: "Update Password",
     createNewPassword: "Create a new password for your account",
     newPassword: "New Password",
@@ -137,8 +132,6 @@ const translations = {
     passwordUpdated: "Password Updated",
     passwordUpdateSuccess: "Your password has been successfully updated",
     updatePasswordError: "Error Updating Password",
-    
-    // Forgot password link
     forgotPassword: "Forgot password?",
     confirmDelete: "Confirm Deletion",
     deleteExpenseMessage: "Are you sure you want to delete this expense? This action cannot be undone.",
@@ -200,7 +193,6 @@ const translations = {
     expensesByCategory: "Gastos por Categoría",
     noExpensesToDisplay: "No hay gastos para mostrar",
     uncategorized: "Sin categoría",
-    // Date filter translations
     allTime: "Todo el Tiempo",
     today: "Hoy",
     thisWeek: "Esta Semana",
@@ -216,7 +208,6 @@ const translations = {
     loadingCategoriesEllipsis: "Cargando categorías...",
     adding: "Agregando...",
     count: "Cantidad",
-    // Sign in/up translations
     signIn: "Iniciar Sesión",
     signUp: "Registrarse",
     email: "Correo Electrónico",
@@ -224,7 +215,6 @@ const translations = {
     signingIn: "Iniciando Sesión...",
     signingUp: "Registrando...",
     trackExpenses: "Rastrea y administra tus gastos",
-    // Password reset translations
     resetPassword: "Restablecer Contraseña",
     resetPasswordDescription: "Ingrese su correo electrónico para recibir un enlace de restablecimiento de contraseña",
     sendResetLink: "Enviar Enlace",
@@ -234,8 +224,6 @@ const translations = {
     resetLinkSent: "Se ha enviado un enlace de restablecimiento de contraseña a su correo electrónico",
     sendAnotherLink: "Enviar Otro Enlace",
     resetError: "Error de Restablecimiento",
-    
-    // Update password translations
     updatePassword: "Actualizar Contraseña",
     createNewPassword: "Cree una nueva contraseña para su cuenta",
     newPassword: "Nueva Contraseña",
@@ -245,8 +233,6 @@ const translations = {
     passwordUpdated: "Contraseña Actualizada",
     passwordUpdateSuccess: "Su contraseña ha sido actualizada con éxito",
     updatePasswordError: "Error al Actualizar la Contraseña",
-    
-    // Forgot password link
     forgotPassword: "¿Olvidó su contraseña?",
     confirmDelete: "Confirmar Eliminación",
     deleteExpenseMessage: "¿Estás seguro de que quieres eliminar este gasto? Esta acción no se puede deshacer.",
