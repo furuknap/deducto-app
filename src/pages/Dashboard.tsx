@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -147,12 +148,17 @@ const Dashboard = () => {
     try {
       setIsSubmitting(true);
       
+      // Get today's date in ISO format, making sure it uses the current date
+      const today = new Date();
+      const isoDate = today.toISOString().split('T')[0];
+      
       const { error } = await supabase.from("expenses").insert({
         user_id: user.id,
         amount: parseFloat(amount),
         description,
         category_id: categoryId || null,
         count: parseInt(count),
+        date: isoDate, // Explicitly set today's date
       });
       
       if (error) throw error;
