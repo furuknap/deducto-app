@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -94,7 +95,15 @@ const translations = {
     selectCategory: "Select a category",
     loadingCategories: "Loading categories...",
     adding: "Adding...",
-    count: "Count"
+    count: "Count",
+    // Sign in/up translations
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    email: "Email",
+    password: "Password",
+    signingIn: "Signing In...",
+    signingUp: "Signing Up...",
+    trackExpenses: "Track and manage your expenses"
   },
   es: {
     appName: "Deducto",
@@ -149,6 +158,15 @@ const translations = {
     selectCategory: "Seleccione una categoría",
     loadingCategories: "Cargando categorías...",
     adding: "Agregando...",
-    count: "Cantidad"
+    count: "Cantidad",
+    // Sign in/up translations
+    signIn: "Iniciar Sesión",
+    signUp: "Registrarse",
+    email: "Correo Electrónico",
+    password: "Contraseña",
+    signingIn: "Iniciando Sesión...",
+    signingUp: "Registrando...",
+    trackExpenses: "Rastrea y administra tus gastos"
   },
 };
+
