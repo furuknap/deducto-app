@@ -89,6 +89,7 @@ const Dashboard = () => {
                   expenses={filteredExpenses}
                   isLoading={isLoadingExpenses}
                   totalAmount={totalAmount}
+                  onExpenseDeleted={fetchExpenses}
                 />
               </CardContent>
             </Card>

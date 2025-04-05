@@ -140,6 +140,14 @@ const translations = {
     
     // Forgot password link
     forgotPassword: "Forgot password?",
+    confirmDelete: "Confirm Deletion",
+    deleteExpenseMessage: "Are you sure you want to delete this expense? This action cannot be undone.",
+    delete: "Delete",
+    deleting: "Deleting...",
+    cancel: "Cancel",
+    expenseDeleted: "Expense Deleted",
+    expenseDeletedMessage: "The expense has been successfully deleted.",
+    errorDeletingExpense: "Error Deleting Expense",
   },
   es: {
     appName: "Deducto",
@@ -240,5 +248,13 @@ const translations = {
     
     // Forgot password link
     forgotPassword: "¿Olvidó su contraseña?",
+    confirmDelete: "Confirmar Eliminación",
+    deleteExpenseMessage: "¿Estás seguro de que quieres eliminar este gasto? Esta acción no se puede deshacer.",
+    delete: "Eliminar",
+    deleting: "Eliminando...",
+    cancel: "Cancelar",
+    expenseDeleted: "Gasto Eliminado",
+    expenseDeletedMessage: "El gasto ha sido eliminado con éxito.",
+    errorDeletingExpense: "Error al Eliminar el Gasto",
   }
 };
