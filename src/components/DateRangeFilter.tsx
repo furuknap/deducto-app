@@ -25,6 +25,7 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
   });
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
+  // Get today's date at the start of the day (midnight)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -56,19 +57,20 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
 
     switch (filter) {
       case "today":
-        range = { from: today, to: today };
+        // Both from and to are set to today at midnight (start of day)
+        range = { from: new Date(today), to: new Date(today) };
         break;
       case "this-week":
-        range = { from: getFirstDayOfWeek(today), to: today };
+        range = { from: getFirstDayOfWeek(today), to: new Date(today) };
         break;
       case "this-month":
-        range = { from: getFirstDayOfMonth(today), to: today };
+        range = { from: getFirstDayOfMonth(today), to: new Date(today) };
         break;
       case "previous-7":
-        range = { from: getPreviousDaysStart(7), to: today };
+        range = { from: getPreviousDaysStart(7), to: new Date(today) };
         break;
       case "previous-30":
-        range = { from: getPreviousDaysStart(30), to: today };
+        range = { from: getPreviousDaysStart(30), to: new Date(today) };
         break;
       case "custom":
         // Keep existing custom date range
@@ -173,3 +175,4 @@ export const DateRangeFilter = ({ onDateRangeChange }: DateRangeFilterProps) => 
     </div>
   );
 };
+

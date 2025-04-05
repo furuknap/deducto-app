@@ -99,15 +99,32 @@ export const useExpenses = (userId: string | undefined) => {
     // Apply date filter
     if (dateRange.from || dateRange.to) {
       filtered = filtered.filter(expense => {
+        // Create date object from expense date string
         const expenseDate = new Date(expense.date);
-        expenseDate.setHours(0, 0, 0, 0);
         
+        // For proper comparison, set both dates to midnight (start of day)
+        const expenseDateStartOfDay = new Date(
+          expenseDate.getFullYear(),
+          expenseDate.getMonth(),
+          expenseDate.getDate(),
+          0, 0, 0, 0
+        );
+        
+        // Handle the comparison for from and to dates
         if (dateRange.from && dateRange.to) {
-          return expenseDate >= dateRange.from && expenseDate <= dateRange.to;
+          // For proper comparison, set the 'to' date to end of day (23:59:59.999)
+          const toDateEndOfDay = new Date(dateRange.to);
+          toDateEndOfDay.setHours(23, 59, 59, 999);
+          
+          return expenseDateStartOfDay >= dateRange.from && expenseDateStartOfDay <= toDateEndOfDay;
         } else if (dateRange.from) {
-          return expenseDate >= dateRange.from;
+          return expenseDateStartOfDay >= dateRange.from;
         } else if (dateRange.to) {
-          return expenseDate <= dateRange.to;
+          // For proper comparison, set the 'to' date to end of day (23:59:59.999)
+          const toDateEndOfDay = new Date(dateRange.to);
+          toDateEndOfDay.setHours(23, 59, 59, 999);
+          
+          return expenseDateStartOfDay <= toDateEndOfDay;
         }
         
         return true;
@@ -159,3 +176,4 @@ export const useExpenses = (userId: string | undefined) => {
     handleCategoryChange
   };
 };
+

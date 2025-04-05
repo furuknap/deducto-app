@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -137,7 +138,6 @@ const translations = {
     deleteExpenseMessage: "Are you sure you want to delete this expense? This action cannot be undone.",
     delete: "Delete",
     deleting: "Deleting...",
-    cancel: "Cancel",
     expenseDeleted: "Expense Deleted",
     expenseDeletedMessage: "The expense has been successfully deleted.",
     errorDeletingExpense: "Error Deleting Expense",
@@ -238,9 +238,9 @@ const translations = {
     deleteExpenseMessage: "¿Estás seguro de que quieres eliminar este gasto? Esta acción no se puede deshacer.",
     delete: "Eliminar",
     deleting: "Eliminando...",
-    cancel: "Cancelar",
     expenseDeleted: "Gasto Eliminado",
     expenseDeletedMessage: "El gasto ha sido eliminado con éxito.",
     errorDeletingExpense: "Error al Eliminar el Gasto",
   }
 };
+
