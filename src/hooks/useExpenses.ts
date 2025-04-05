@@ -180,6 +180,7 @@ export const useExpenses = (userId: string | undefined) => {
     isLoadingCategories,
     totalAmount,
     selectedCategoryId,
+    dateRange,
     fetchExpenses,
     fetchCategories,
     handleDateRangeChange,

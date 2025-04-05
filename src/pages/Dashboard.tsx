@@ -25,6 +25,7 @@ const Dashboard = () => {
     isLoadingCategories,
     totalAmount,
     selectedCategoryId,
+    dateRange,
     fetchExpenses,
     handleDateRangeChange,
     handleCategoryChange
@@ -93,12 +94,16 @@ const Dashboard = () => {
                 />
               </CardContent>
             </Card>
-            
-            <ExpenseChart 
-              expenses={filteredExpenses}
-              isLoading={isLoadingExpenses}
-            />
           </div>
+        </div>
+        
+        {/* Move the chart to the bottom of the page */}
+        <div className="mt-6">
+          <ExpenseChart 
+            expenses={filteredExpenses}
+            isLoading={isLoadingExpenses}
+            dateRange={dateRange}
+          />
         </div>
       </div>
     </div>

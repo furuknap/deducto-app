@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
 type Expense = Tables<"expenses"> & {
   categories: Tables<"categories"> | null;
@@ -33,9 +34,13 @@ const COLORS = [
 interface ExpenseChartProps {
   expenses: Expense[];
   isLoading: boolean;
+  dateRange?: {
+    from: Date | undefined;
+    to: Date | undefined;
+  };
 }
 
-export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
+export const ExpenseChart = ({ expenses, isLoading, dateRange }: ExpenseChartProps) => {
   const { t } = useLanguage();
 
   const chartData = useMemo(() => {
@@ -86,6 +91,30 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
     percentage: totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0
   }));
 
+  // Format the date range for display
+  const dateRangeText = useMemo(() => {
+    if (!dateRange || (!dateRange.from && !dateRange.to)) {
+      return t("allTime");
+    }
+    
+    if (dateRange.from && dateRange.to) {
+      if (dateRange.from.toDateString() === dateRange.to.toDateString()) {
+        return format(dateRange.from, 'MMM dd, yyyy');
+      }
+      return `${format(dateRange.from, 'MMM dd, yyyy')} - ${format(dateRange.to, 'MMM dd, yyyy')}`;
+    }
+    
+    if (dateRange.from) {
+      return `${format(dateRange.from, 'MMM dd, yyyy')} - ${t("present")}`;
+    }
+    
+    if (dateRange.to) {
+      return `${t("until")} ${format(dateRange.to, 'MMM dd, yyyy')}`;
+    }
+    
+    return t("allTime");
+  }, [dateRange, t]);
+
   if (isLoading) {
     return (
       <Card>
@@ -114,8 +143,9 @@ export const ExpenseChart = ({ expenses, isLoading }: ExpenseChartProps) => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-col space-y-1">
         <CardTitle>{t("expensesByCategory")}</CardTitle>
+        <p className="text-sm text-muted-foreground">{dateRangeText}</p>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row h-[300px] w-full">
