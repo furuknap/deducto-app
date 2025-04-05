@@ -18,6 +18,7 @@ const Dashboard = () => {
   
   const {
     filteredExpenses,
+    dateFilteredExpenses,
     categories,
     isLoadingExpenses,
     isLoadingCategories,
@@ -75,7 +76,7 @@ const Dashboard = () => {
               <div className="flex flex-col gap-4 mb-4">
                 <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
                 <CategoryFilter 
-                  expenses={filteredExpenses}
+                  expenses={dateFilteredExpenses}
                   categories={categories}
                   selectedCategoryId={selectedCategoryId}
                   onCategoryChange={handleCategoryChange}

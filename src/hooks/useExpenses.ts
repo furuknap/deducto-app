@@ -17,6 +17,7 @@ type DateRange = {
 
 export const useExpenses = (userId: string | undefined) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [dateFilteredExpenses, setDateFilteredExpenses] = useState<Expense[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(true);
@@ -40,8 +41,12 @@ export const useExpenses = (userId: string | undefined) => {
   }, [userId]);
 
   useEffect(() => {
-    filterExpenses();
-  }, [expenses, dateRange, selectedCategoryId]);
+    applyDateFilter();
+  }, [expenses, dateRange]);
+
+  useEffect(() => {
+    applyCategoryFilter();
+  }, [dateFilteredExpenses, selectedCategoryId]);
 
   const fetchExpenses = async () => {
     try {
@@ -55,6 +60,7 @@ export const useExpenses = (userId: string | undefined) => {
       if (error) throw error;
       setExpenses(data || []);
       setFilteredExpenses(data || []);
+      setDateFilteredExpenses(data || []);
     } catch (error: any) {
       toast({
         title: "Error fetching expenses",
@@ -87,7 +93,7 @@ export const useExpenses = (userId: string | undefined) => {
     }
   };
 
-  const filterExpenses = () => {
+  const applyDateFilter = () => {
     let filtered = [...expenses];
     
     // Apply date filter
@@ -108,14 +114,26 @@ export const useExpenses = (userId: string | undefined) => {
       });
     }
     
-    // Apply category filter
-    if (selectedCategoryId) {
-      filtered = filtered.filter(expense => 
-        expense.category_id === selectedCategoryId
-      );
-    }
+    setDateFilteredExpenses(filtered);
     
-    setFilteredExpenses(filtered);
+    // Also apply category filter to maintain both filters
+    if (selectedCategoryId) {
+      setFilteredExpenses(filtered.filter(expense => 
+        expense.category_id === selectedCategoryId
+      ));
+    } else {
+      setFilteredExpenses(filtered);
+    }
+  };
+
+  const applyCategoryFilter = () => {
+    if (selectedCategoryId) {
+      setFilteredExpenses(dateFilteredExpenses.filter(expense => 
+        expense.category_id === selectedCategoryId
+      ));
+    } else {
+      setFilteredExpenses(dateFilteredExpenses);
+    }
   };
 
   const handleDateRangeChange = (newDateRange: DateRange) => {
@@ -129,6 +147,7 @@ export const useExpenses = (userId: string | undefined) => {
   return {
     expenses,
     filteredExpenses,
+    dateFilteredExpenses,
     categories,
     isLoadingExpenses,
     isLoadingCategories,

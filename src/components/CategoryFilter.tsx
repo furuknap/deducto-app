@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Check, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import {
   DropdownMenu,
