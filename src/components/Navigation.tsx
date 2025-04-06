@@ -32,9 +32,14 @@ export function Navigation() {
         <LanguageSwitcher />
         
         {user ? (
-          <Button onClick={signOut} variant="outline">
-            {t("logout")}
-          </Button>
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-500">
+              {user.email}
+            </span>
+            <Button onClick={signOut} variant="outline">
+              {t("logout")}
+            </Button>
+          </div>
         ) : (
           <span className="text-sm text-gray-500">
             {t("welcome")}
