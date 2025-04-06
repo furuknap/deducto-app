@@ -72,7 +72,10 @@ export const useExpenses = (userId: string | undefined) => {
       // Make sure the RLS policy uses auth.uid() by explicitly setting the user_id filter
       const { data, error } = await supabase
         .from("expenses")
-        .select("*, categories(*)")
+        .select(`
+          *,
+          categories(*)
+        `)
         .eq("user_id", userId) // Explicitly filter by user_id
         .order("date", { ascending: false })
         .limit(50);
@@ -111,7 +114,7 @@ export const useExpenses = (userId: string | undefined) => {
       const { data, error } = await supabase
         .from("categories")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", userId || '')
         .order("name", { ascending: true });
       
       if (error) throw error;
