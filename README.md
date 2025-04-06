@@ -30,10 +30,12 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
 ### Setting Up Supabase
 
 1. **Create a Supabase Account**:
+
    - Go to [https://supabase.com](https://supabase.com) and sign up for a free account
    - Create a new project and note your project URL and anon/public key
 
 2. **Set Up Database Tables**:
+
    - In the Supabase dashboard, navigate to the SQL Editor
    - Create the necessary tables by running the following SQL:
 
@@ -91,21 +93,25 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
 ### Local Development
 
 1. **Clone the repository**:
+
    ```sh
    git clone <your-repo-url>
    cd deducto
    ```
 
 2. **Install dependencies**:
+
    ```sh
    npm install
    ```
 
 3. **Update Supabase Configuration**:
+
    - Locate the `src/integrations/supabase/client.ts` file
    - Replace the Supabase URL and anon key with your own values from your Supabase project
 
 4. **Start the development server**:
+
    ```sh
    npm run dev
    ```
@@ -125,6 +131,7 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
 To deploy this project:
 
 1. Build the production version:
+
    ```sh
    npm run build
    ```
@@ -139,24 +146,3 @@ To deploy this project:
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
-
-## Database Setup
-
-### Categories Table Migration
-
-If you're setting up a new project or upgrading an existing one, run the following SQL command in the Supabase SQL Editor to add user-specific permissions to the categories table:
-
-```sql
--- Add user_id column to categories table and enable Row Level Security
-ALTER TABLE public.categories 
-ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id),
-ENABLE ROW LEVEL SECURITY,
-ADD POLICY "Users can manage their own categories" ON categories 
-FOR ALL USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
-```
-
-This SQL command will:
-- Add a `user_id` column to the categories table if it doesn't already exist
-- Enable Row Level Security
-- Create a comprehensive policy that allows users to view, create, update, and delete only their own categories
