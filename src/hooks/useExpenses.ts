@@ -52,6 +52,8 @@ export const useExpenses = (userId: string | undefined) => {
   const fetchExpenses = async () => {
     try {
       setIsLoadingExpenses(true);
+      
+      // With RLS enabled, this query will automatically only return the current user's expenses
       const { data, error } = await supabase
         .from("expenses")
         .select("*, categories(*)")
@@ -76,6 +78,7 @@ export const useExpenses = (userId: string | undefined) => {
   const fetchCategories = async () => {
     try {
       setIsLoadingCategories(true);
+      // With RLS, this will return all categories for all authenticated users
       const { data, error } = await supabase
         .from("categories")
         .select("*")
