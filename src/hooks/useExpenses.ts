@@ -36,6 +36,7 @@ export const useExpenses = (userId: string | undefined) => {
 
   useEffect(() => {
     if (userId) {
+      console.log("Fetching expenses for user ID:", userId);
       fetchExpenses();
       fetchCategories();
     }
@@ -53,6 +54,8 @@ export const useExpenses = (userId: string | undefined) => {
     try {
       setIsLoadingExpenses(true);
       
+      console.log("Fetching expenses, authenticated as user ID:", userId);
+      
       // With RLS enabled, this query will automatically only return the current user's expenses
       const { data, error } = await supabase
         .from("expenses")
@@ -60,11 +63,18 @@ export const useExpenses = (userId: string | undefined) => {
         .order("date", { ascending: false })
         .limit(50);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching expenses:", error);
+        throw error;
+      }
+      
+      console.log(`Fetched ${data?.length || 0} expenses`);
+      
       setExpenses(data || []);
       setFilteredExpenses(data || []);
       setDateFilteredExpenses(data || []);
     } catch (error: any) {
+      console.error("Error in fetchExpenses:", error);
       toast({
         title: "Error fetching expenses",
         description: error.message,
@@ -78,6 +88,7 @@ export const useExpenses = (userId: string | undefined) => {
   const fetchCategories = async () => {
     try {
       setIsLoadingCategories(true);
+      
       // With RLS, this will return all categories for all authenticated users
       const { data, error } = await supabase
         .from("categories")
