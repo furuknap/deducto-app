@@ -144,42 +144,19 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ### Categories Table Migration
 
-If you're setting up a new project or upgrading an existing one, run the following SQL commands in the Supabase SQL Editor to add user-specific permissions to the categories table:
+If you're setting up a new project or upgrading an existing one, run the following SQL command in the Supabase SQL Editor to add user-specific permissions to the categories table:
 
 ```sql
--- Add user_id column to categories table
+-- Add user_id column to categories table and enable Row Level Security
 ALTER TABLE public.categories 
-ADD COLUMN user_id UUID REFERENCES auth.users(id);
-
--- Enable Row Level Security on the categories table
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-
--- Create policy to allow users to view their own categories
-CREATE POLICY "Users can view their own categories" 
-ON public.categories 
-FOR SELECT 
-USING (auth.uid() = user_id);
-
--- Create policy to allow users to create their own categories
-CREATE POLICY "Users can create their own categories" 
-ON public.categories 
-FOR INSERT 
+ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id),
+ENABLE ROW LEVEL SECURITY,
+ADD POLICY "Users can manage their own categories" ON categories 
+FOR ALL USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
-
--- Create policy to allow users to update their own categories
-CREATE POLICY "Users can update their own categories" 
-ON public.categories 
-FOR UPDATE 
-USING (auth.uid() = user_id);
-
--- Create policy to allow users to delete their own categories
-CREATE POLICY "Users can delete their own categories" 
-ON public.categories 
-FOR DELETE 
-USING (auth.uid() = user_id);
 ```
 
-These SQL commands will:
-- Add a `user_id` column to the categories table
+This SQL command will:
+- Add a `user_id` column to the categories table if it doesn't already exist
 - Enable Row Level Security
-- Create policies to ensure users can only interact with their own categories
+- Create a comprehensive policy that allows users to view, create, update, and delete only their own categories
