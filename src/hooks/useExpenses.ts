@@ -37,6 +37,10 @@ export const useExpenses = (userId: string | undefined) => {
   useEffect(() => {
     if (userId) {
       console.log("Fetching expenses for user ID:", userId);
+      // Force a refresh by clearing state first
+      setExpenses([]);
+      setDateFilteredExpenses([]);
+      setFilteredExpenses([]);
       fetchExpenses();
       fetchCategories();
     }
@@ -56,10 +60,20 @@ export const useExpenses = (userId: string | undefined) => {
       
       console.log("Fetching expenses, authenticated as user ID:", userId);
       
-      // With RLS enabled, this query will automatically only return the current user's expenses
+      // Get the current session to verify authentication
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw sessionError;
+      }
+      
+      console.log("Current auth session user:", sessionData.session?.user?.email);
+      
+      // Make sure the RLS policy uses auth.uid() by explicitly setting the user_id filter
       const { data, error } = await supabase
         .from("expenses")
         .select("*, categories(*)")
+        .eq("user_id", userId) // Explicitly filter by user_id
         .order("date", { ascending: false })
         .limit(50);
       
@@ -68,8 +82,10 @@ export const useExpenses = (userId: string | undefined) => {
         throw error;
       }
       
-      console.log(`Fetched ${data?.length || 0} expenses`);
+      console.log(`Fetched ${data?.length || 0} expenses for user ${userId}`);
+      console.log("First few expenses:", data?.slice(0, 2));
       
+      // Reset states with fresh data
       setExpenses(data || []);
       setFilteredExpenses(data || []);
       setDateFilteredExpenses(data || []);
