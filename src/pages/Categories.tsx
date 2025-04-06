@@ -40,12 +40,16 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
+      console.log("Fetching categories for user:", user?.id);
+      
       const { data, error } = await supabase
         .from("categories")
         .select("*")
+        .eq("user_id", user?.id) // Explicitly filter by user_id
         .order("name", { ascending: true });
       
       if (error) throw error;
+      console.log(`Fetched ${data?.length || 0} categories for user ${user?.id}`);
       setCategories(data || []);
     } catch (error: any) {
       toast({
@@ -68,6 +72,7 @@ const Categories = () => {
       
       const { error } = await supabase.from("categories").insert({
         name: newCategoryName.trim(),
+        user_id: user.id, // Explicitly set the user_id
       });
       
       if (error) throw error;
@@ -98,7 +103,8 @@ const Categories = () => {
       const { error } = await supabase
         .from("categories")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user?.id); // Add user_id filter for extra security
       
       if (error) throw error;
       

@@ -105,15 +105,21 @@ export const useExpenses = (userId: string | undefined) => {
     try {
       setIsLoadingCategories(true);
       
-      // With RLS, this will return all categories for all authenticated users
+      console.log("Fetching categories for user ID:", userId);
+      
+      // Explicitly filter categories by user_id
       const { data, error } = await supabase
         .from("categories")
         .select("*")
+        .eq("user_id", userId)
         .order("name", { ascending: true });
       
       if (error) throw error;
+      
+      console.log(`Fetched ${data?.length || 0} categories for user ${userId}`);
       setCategories(data || []);
     } catch (error: any) {
+      console.error("Error fetching categories:", error);
       toast({
         title: "Error fetching categories",
         description: error.message,
