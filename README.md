@@ -1,3 +1,4 @@
+
 # Deducto - Expense Tracking Application
 
 Deducto is a bilingual (English/Spanish) expense tracking application that helps you monitor and manage your personal or business expenses. Track spending across different categories, view expense breakdowns, and gain insights into your financial habits.
@@ -44,6 +45,7 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
    CREATE TABLE public.categories (
      id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
      name TEXT NOT NULL,
+     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
    );
 
@@ -55,13 +57,34 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
      category_id UUID REFERENCES public.categories(id),
      date DATE NOT NULL DEFAULT CURRENT_DATE,
      count INTEGER NOT NULL DEFAULT 1,
-     user_id UUID NOT NULL,
+     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
    );
 
    -- Enable Row Level Security
    ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
    ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
+
+   -- Create RLS policies for categories
+   CREATE POLICY "Users can view their own categories"
+     ON public.categories
+     FOR SELECT
+     USING (auth.uid() = user_id);
+
+   CREATE POLICY "Users can create their own categories"
+     ON public.categories
+     FOR INSERT
+     WITH CHECK (auth.uid() = user_id);
+
+   CREATE POLICY "Users can update their own categories"
+     ON public.categories
+     FOR UPDATE
+     USING (auth.uid() = user_id);
+
+   CREATE POLICY "Users can delete their own categories"
+     ON public.categories
+     FOR DELETE
+     USING (auth.uid() = user_id);
 
    -- Create RLS policies for expenses
    CREATE POLICY "Users can view their own expenses"

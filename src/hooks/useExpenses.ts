@@ -58,6 +58,11 @@ export const useExpenses = (userId: string | undefined) => {
     try {
       setIsLoadingExpenses(true);
       
+      if (!userId) {
+        console.log("No user ID provided, skipping expense fetch");
+        return;
+      }
+      
       console.log("Fetching expenses, authenticated as user ID:", userId);
       
       // Get the current session to verify authentication
@@ -88,10 +93,19 @@ export const useExpenses = (userId: string | undefined) => {
       console.log(`Fetched ${data?.length || 0} expenses for user ${userId}`);
       console.log("First few expenses:", data?.slice(0, 2));
       
-      // Reset states with fresh data
-      setExpenses(data || []);
-      setFilteredExpenses(data || []);
-      setDateFilteredExpenses(data || []);
+      // Verify each expense belongs to the current user
+      const validatedExpenses = data?.filter(expense => 
+        expense.user_id === userId
+      ) || [];
+      
+      if (validatedExpenses.length !== data?.length) {
+        console.warn(`Filtered out ${(data?.length || 0) - validatedExpenses.length} expenses that didn't match user ID`);
+      }
+      
+      // Reset states with validated data
+      setExpenses(validatedExpenses);
+      setFilteredExpenses(validatedExpenses);
+      setDateFilteredExpenses(validatedExpenses);
     } catch (error: any) {
       console.error("Error in fetchExpenses:", error);
       toast({
@@ -108,6 +122,11 @@ export const useExpenses = (userId: string | undefined) => {
     try {
       setIsLoadingCategories(true);
       
+      if (!userId) {
+        console.log("No user ID provided, skipping categories fetch");
+        return;
+      }
+      
       console.log("Fetching categories for user ID:", userId);
       
       // Explicitly filter categories by user_id
@@ -120,7 +139,17 @@ export const useExpenses = (userId: string | undefined) => {
       if (error) throw error;
       
       console.log(`Fetched ${data?.length || 0} categories for user ${userId}`);
-      setCategories(data || []);
+      
+      // Validate all categories belong to current user
+      const validatedCategories = data?.filter(category => 
+        category.user_id === userId
+      ) || [];
+      
+      if (validatedCategories.length !== data?.length) {
+        console.warn(`Filtered out ${(data?.length || 0) - validatedCategories.length} categories that didn't match user ID`);
+      }
+      
+      setCategories(validatedCategories);
     } catch (error: any) {
       console.error("Error fetching categories:", error);
       toast({
