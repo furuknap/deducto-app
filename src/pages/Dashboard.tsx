@@ -11,6 +11,7 @@ import { ExpenseForm } from "@/components/ExpenseForm";
 import { ExpenseList } from "@/components/ExpenseList";
 import { ExpenseChart } from "@/components/ExpenseChart";
 import { useExpenses } from "@/hooks/useExpenses";
+import { Expense } from "@/utils/dataStorage";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();

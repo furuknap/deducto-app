@@ -1,16 +1,11 @@
-
 import React, { useMemo } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
-import { Tables } from "@/integrations/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-
-type Expense = Tables<"expenses"> & {
-  categories: Tables<"categories"> | null;
-};
+import { Expense, Category } from "@/utils/dataStorage";
 
 type CategoryTotal = {
   name: string;
