@@ -4,8 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate-supabase-client": "node src/scripts/generate-supabase-client.js",
+    "predev": "npm run generate-supabase-client",
     "dev": "vite",
+    "prebuild": "npm run generate-supabase-client",
     "build": "vite build",
+    "prebuild:dev": "npm run generate-supabase-client",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"

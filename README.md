@@ -1,4 +1,3 @@
-
 # Deducto - Expense Tracking Application
 
 Deducto is a bilingual (English/Spanish) expense tracking application that helps you monitor and manage your personal or business expenses. Track spending across different categories, view expense breakdowns, and gain insights into your financial habits.
@@ -130,8 +129,20 @@ Deducto is a bilingual (English/Spanish) expense tracking application that helps
 
 3. **Update Supabase Configuration**:
 
-   - Locate the `src/integrations/supabase/client.ts` file
-   - Replace the Supabase URL and anon key with your own values from your Supabase project
+   - Create a copy of `src/config.template.json` and name it `src/config.json`
+   - Replace the placeholder values with your actual Supabase URL and anonymous key:
+
+   ```json
+   {
+     "supabase": {
+       "url": "YOUR_SUPABASE_URL",
+       "anonKey": "YOUR_SUPABASE_ANON_KEY"
+     }
+   }
+   ```
+
+   - The `config.json` file is gitignored to prevent accidentally committing your credentials
+   - If you're running the application with template credentials, you'll see a warning banner in development mode
 
 4. **Start the development server**:
 
@@ -165,6 +176,7 @@ To deploy this project:
    - Review and restrict CORS settings
    - Enable email confirmation for authentication
    - Set up additional security as needed
+   - **Important**: The application will refuse to start in production if template Supabase credentials are detected. Make sure to configure real credentials before deploying.
 
 ## License
 

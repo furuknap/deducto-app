@@ -1,0 +1,19 @@
+{
+  "name": "Deducto by DeLaCasa.app",
+  "short_name": "Deducto",
+  "description": "Track and manage your expenses with Deducto by DeLaCasa.app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ],
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en-US"
+}

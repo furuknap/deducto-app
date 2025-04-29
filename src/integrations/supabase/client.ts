@@ -2,10 +2,33 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://oxjorxkqjofzigjbatkd.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9yeGtxam9memlnamJhdGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM4NzQzMjUsImV4cCI6MjA1OTQ1MDMyNX0.Gixull8elVpaCz3GCotkrrozdJl69fLh2TpBgIyBodY";
+// Import the real configuration from config.json
+// This will be replaced with the actual values at build time
+const SUPABASE_URL = "https://kungeoclawmjxukemrqh.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bmdlb2NsYXdtanh1a2VtcnFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM4ODQzMzcsImV4cCI6MjA1OTQ2MDMzN30.OjB_VGNx_pTe_uRRL_51gGcNfp_op5d2mbYVOAjRrrU";
+
+// Template values for comparison
+const TEMPLATE_URL = "YOUR_SUPABASE_URL";
+const TEMPLATE_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+// Check if we're using template values
+export const isUsingTemplateCredentials = 
+  SUPABASE_URL === TEMPLATE_URL || 
+  SUPABASE_PUBLISHABLE_KEY === TEMPLATE_KEY;
+
+// Production check (will be replaced with actual value at build time)
+const IS_PRODUCTION = false;
+
+// Show warning or throw error if using template credentials
+if (isUsingTemplateCredentials) {
+  if (IS_PRODUCTION) {
+    throw new Error('Cannot use template Supabase credentials in production. Please configure real credentials in config.json.');
+  } else {
+    console.warn('Using template Supabase credentials. Replace with real credentials in config.json for full functionality.');
+  }
+}
 
 // Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+// import { supabase, isUsingTemplateCredentials } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
