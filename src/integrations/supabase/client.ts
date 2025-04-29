@@ -2,26 +2,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Import the real configuration from config.json
-// This will be replaced with the actual values at build time
 const SUPABASE_URL = "https://kungeoclawmjxukemrqh.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bmdlb2NsYXdtanh1a2VtcnFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM4ODQzMzcsImV4cCI6MjA1OTQ2MDMzN30.OjB_VGNx_pTe_uRRL_51gGcNfp_op5d2mbYVOAjRrrU";
 
-// Template values for comparison
-const TEMPLATE_URL = "YOUR_SUPABASE_URL";
-const TEMPLATE_KEY = "YOUR_SUPABASE_ANON_KEY";
+// Flag to indicate if we're using template credentials
+export const isUsingTemplateCredentials = false;
 
-// Check if we're using template values
-export const isUsingTemplateCredentials = 
-  SUPABASE_URL === TEMPLATE_URL || 
-  SUPABASE_PUBLISHABLE_KEY === TEMPLATE_KEY;
-
-// Production check (will be replaced with actual value at build time)
-const IS_PRODUCTION = false;
+// Production check
+const isProduction = typeof import.meta !== 'undefined' && 
+  typeof import.meta.env !== 'undefined' && 
+  import.meta.env.MODE === 'production';
 
 // Show warning or throw error if using template credentials
 if (isUsingTemplateCredentials) {
-  if (IS_PRODUCTION) {
+  if (isProduction) {
     throw new Error('Cannot use template Supabase credentials in production. Please configure real credentials in config.json.');
   } else {
     console.warn('Using template Supabase credentials. Replace with real credentials in config.json for full functionality.');

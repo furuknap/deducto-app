@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,17 +5,21 @@ import { useAuth } from "@/context/AuthContext";
 import { Navigation } from "@/components/Navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
-import { CategoryFilter } from "@/components/CategoryFilter";
-import { ExpenseForm } from "@/components/ExpenseForm";
-import { ExpenseList } from "@/components/ExpenseList";
-import { ExpenseChart } from "@/components/ExpenseChart";
-import { useExpenses } from "@/hooks/useExpenses";
+import { OfflineCategoryFilter } from "@/components/OfflineCategoryFilter";
+import { OfflineExpenseForm } from "@/components/OfflineExpenseForm";
+import { OfflineExpenseList } from "@/components/OfflineExpenseList";
+import { OfflineExpenseChart } from "@/components/OfflineExpenseChart";
+import { useOfflineExpenses } from "@/hooks/useOfflineExpenses";
+import { useOffline } from "@/context/OfflineContext";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Wifi, WifiOff } from "lucide-react";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  
+  const { isOnline, isSyncing, triggerSync } = useOffline();
+
   const {
     filteredExpenses,
     dateFilteredExpenses,
@@ -28,15 +31,17 @@ const Dashboard = () => {
     dateRange,
     fetchExpenses,
     handleDateRangeChange,
-    handleCategoryChange
-  } = useExpenses(user?.id);
-  
+    handleCategoryChange,
+    addNewExpense,
+    deleteExpenseById,
+  } = useOfflineExpenses(user?.id);
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/");
     }
   }, [user, loading, navigate]);
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -47,12 +52,44 @@ const Dashboard = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
-      
+
       <div className="container mx-auto py-8 px-4 flex-1">
+        {/* Online/Offline Status Indicator */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isOnline ? (
+              <>
+                <Wifi className="h-5 w-5 text-green-600" />
+                <span className="text-sm text-green-600">{t("online")}</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="h-5 w-5 text-amber-600" />
+                <span className="text-sm text-amber-600">{t("offline")}</span>
+              </>
+            )}
+          </div>
+
+          {isOnline && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => triggerSync()}
+              disabled={isSyncing}
+              className="flex items-center gap-1"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+              />
+              {isSyncing ? t("syncing") : t("syncNow")}
+            </Button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="md:col-span-1">
             <CardHeader>
@@ -60,16 +97,18 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               {user && (
-                <ExpenseForm 
+                <OfflineExpenseForm
                   userId={user.id}
                   categories={categories}
                   isLoadingCategories={isLoadingCategories}
                   onExpenseAdded={fetchExpenses}
+                  addNewExpense={addNewExpense}
+                  isOnline={isOnline}
                 />
               )}
             </CardContent>
           </Card>
-          
+
           <div className="md:col-span-2 flex flex-col gap-6">
             <Card>
               <CardHeader>
@@ -78,28 +117,29 @@ const Dashboard = () => {
               <CardContent>
                 <div className="flex flex-col gap-4 mb-4">
                   <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
-                  <CategoryFilter 
+                  <OfflineCategoryFilter
                     expenses={dateFilteredExpenses}
                     categories={categories}
                     selectedCategoryId={selectedCategoryId}
                     onCategoryChange={handleCategoryChange}
                   />
                 </div>
-                
-                <ExpenseList 
+
+                <OfflineExpenseList
                   expenses={filteredExpenses}
                   isLoading={isLoadingExpenses}
-                  totalAmount={totalAmount}
-                  onExpenseDeleted={fetchExpenses}
+                  onDeleteExpense={deleteExpenseById}
+                  onSyncRequest={triggerSync}
+                  isOnline={isOnline}
                 />
               </CardContent>
             </Card>
           </div>
         </div>
-        
+
         {/* Move the chart to the bottom of the page */}
         <div className="mt-6">
-          <ExpenseChart 
+          <OfflineExpenseChart
             expenses={filteredExpenses}
             isLoading={isLoadingExpenses}
             dateRange={dateRange}

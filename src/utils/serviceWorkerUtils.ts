@@ -1,4 +1,5 @@
 // Service Worker utility functions
+import { toast } from "@/components/ui/use-toast";
 
 /**
  * Check if service workers are supported by the browser
@@ -19,6 +20,17 @@ export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration
   try {
     const registration = await navigator.serviceWorker.register('/service-worker.js');
     console.log('Service Worker registered with scope:', registration.scope);
+    
+    // Register for sync if supported
+    if ('sync' in registration && registration.sync) {
+      try {
+        await (registration.sync as SyncManager).register('deducto-sync');
+        console.log('Background sync registered');
+      } catch (error) {
+        console.error('Error registering background sync:', error);
+      }
+    }
+    
     return registration;
   } catch (error) {
     console.error('Service Worker registration failed:', error);
@@ -35,6 +47,7 @@ export const checkForUpdates = (registration: ServiceWorkerRegistration): void =
     registration.update();
   }, 60 * 60 * 1000);
 };
+
 /**
  * Event emitter for service worker updates
  */
@@ -103,4 +116,90 @@ export const setupServiceWorkerUpdates = (registration: ServiceWorkerRegistratio
 
   // Set up periodic update checks
   checkForUpdates(registration);
+};
+
+/**
+ * Trigger a manual sync from the service worker
+ */
+export const triggerServiceWorkerSync = async (): Promise<boolean> => {
+  if (!isServiceWorkerSupported() || !navigator.serviceWorker.controller) {
+    console.warn('Service worker not available for sync');
+    return false;
+  }
+
+  return new Promise((resolve) => {
+    // Set up a one-time message handler for the sync status response
+    const messageHandler = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'SYNC_STATUS') {
+        // Clean up the event listener
+        navigator.serviceWorker.removeEventListener('message', messageHandler);
+        
+        if (event.data.status === 'completed') {
+          toast({
+            title: "Sync Complete",
+            description: "Your data has been synchronized with the server.",
+          });
+          resolve(true);
+        } else if (event.data.status === 'failed') {
+          console.error('Sync failed:', event.data.error);
+          toast({
+            title: "Sync Failed",
+            description: "There was a problem synchronizing your data.",
+            variant: "destructive",
+          });
+          resolve(false);
+        } else if (event.data.supported === false) {
+          console.warn('Background sync not supported');
+          toast({
+            title: "Sync Not Supported",
+            description: "Background sync is not supported by your browser.",
+            variant: "destructive",
+          });
+          resolve(false);
+        }
+      }
+    };
+    
+    // Listen for messages from the service worker
+    navigator.serviceWorker.addEventListener('message', messageHandler);
+    
+    // Send the sync request
+    navigator.serviceWorker.controller.postMessage({ type: 'SYNC_NOW' });
+    
+    // Set a timeout in case we don't get a response
+    setTimeout(() => {
+      navigator.serviceWorker.removeEventListener('message', messageHandler);
+      console.warn('Sync request timed out');
+      toast({
+        title: "Sync Timeout",
+        description: "The sync request timed out. Please try again.",
+        variant: "destructive",
+      });
+      resolve(false);
+    }, 10000);
+  });
+};
+
+/**
+ * Check if the device is online
+ */
+export const isOnline = (): boolean => {
+  return navigator.onLine;
+};
+
+/**
+ * Listen for online/offline status changes
+ */
+export const setupOnlineStatusListeners = (
+  onlineCallback: () => void,
+  offlineCallback: () => void
+): () => void => {
+  window.addEventListener('online', onlineCallback);
+  window.addEventListener('offline', offlineCallback);
+  
+  // Return a cleanup function
+  return () => {
+    window.removeEventListener('online', onlineCallback);
+    window.removeEventListener('offline', offlineCallback);
+  };
 };
