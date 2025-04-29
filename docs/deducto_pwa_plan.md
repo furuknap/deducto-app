@@ -37,18 +37,20 @@ This phase focuses on implementing core PWA capabilities in the standalone Deduc
 
 **Completed:** The service worker has been implemented with caching strategies for static assets and API requests. A utility file for service worker registration and update handling has been created, along with a notification component to inform users when updates are available. The service worker is registered in main.tsx and the notification component is integrated into the App component.
 
-### Task 3: Enhance for Offline Use
+### Task 3: Enhance for Offline Use ✅
 
 **Goal:** Ensure core Deducto functionality (adding and viewing expenses) works offline with synchronization when online.
 
 **Steps:**
 
-1. Create a new branch for this task (e.g., `feature/pwa-offline-data`).
-2. Implement local data storage (e.g., using IndexedDB) for expenses.
-3. Modify the application logic to read from and write to local storage when offline.
-4. Implement background synchronization to sync local changes with the backend when the application is online.
-5. Commit and push the changes.
-6. Seek approval for the offline data handling and synchronization logic.
+1. ✅ Create a new branch for this task (e.g., `feature/pwa-offline-data`).
+2. ✅ Implement local data storage (e.g., using IndexedDB) for expenses.
+3. ✅ Modify the application logic to read from and write to local storage when offline.
+4. ✅ Implement background synchronization to sync local changes with the backend when the application is online.
+5. ✅ Commit and push the changes.
+6. ✅ Seek approval for the offline data handling and synchronization logic.
+
+**Completed:** Offline functionality has been implemented using IndexedDB for local storage of expenses and categories. The application now detects online/offline status and automatically switches between local and remote data storage. Background synchronization has been implemented to sync local changes with the backend when the application comes back online. New components have been created to handle offline data display and management, including OfflineExpenseForm, OfflineExpenseList, OfflineCategoryFilter, and OfflineExpenseChart. The service worker has been enhanced to handle offline requests and background sync.
 
 ### Task 4: Add Install Capability and Optimize Performance
 
