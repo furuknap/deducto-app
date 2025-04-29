@@ -18,6 +18,8 @@ This task involves creating a file that provides essential metadata about the De
 4.  **Approval:** Request approval for the completion of this task.
 5.  **Update Plan:** Update the plan document to mark this task as completed.
 
+- **Status:** Completed (Branch: `feature/pwa-manifest-task1-v2`)
+
 ### Task 2: Implement Minimal Service Worker
 
 This task involves creating a background script that enables basic PWA functionalities, such as caching assets to improve loading performance.
@@ -27,6 +29,8 @@ This task involves creating a background script that enables basic PWA functiona
 3.  **Commit and Push:** Commit the changes to the new branch and push it to the repository.
 4.  **Approval:** Request approval for the completion of this task.
 5.  **Update Plan:** Update the plan document to mark this task as completed.
+
+- **Status:** Completed (Branch: `feature/pwa-service-worker-v2`)
 
 ### Task 3: Update HTML for PWA
 
