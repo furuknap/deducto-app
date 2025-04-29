@@ -22,18 +22,20 @@ This phase focuses on implementing core PWA capabilities in the standalone Deduc
 
 **Completed:** The manifest.json file has been created with the app name "Deducto by DeLaCasa.app" and linked in the index.html file. The changes have been committed and pushed to the feature/pwa-manifest branch.
 
-### Task 2: Implement Service Worker
+### Task 2: Implement Service Worker ✅
 
 **Goal:** Enable offline functionality and caching by creating and registering a service worker.
 
 **Steps:**
 
-1. Create a new branch for this task (e.g., `feature/pwa-service-worker`).
-2. Create the `Deducto/public/service-worker.js` file.
-3. Implement basic caching strategies in the service worker (e.g., cache static assets).
-4. Register the service worker in `Deducto/src/main.tsx` or a suitable entry point.
-5. Commit and push the changes.
-6. Seek approval for the service worker implementation.
+1. ✅ Create a new branch for this task (`feature/pwa-service-worker`).
+2. ✅ Create the `Deducto/public/service-worker.js` file.
+3. ✅ Implement basic caching strategies in the service worker (e.g., cache static assets).
+4. ✅ Register the service worker in `Deducto/src/main.tsx` or a suitable entry point.
+5. ✅ Commit and push the changes.
+6. ✅ Seek approval for the service worker implementation.
+
+**Completed:** The service worker has been implemented with caching strategies for static assets and API requests. A utility file for service worker registration and update handling has been created, along with a notification component to inform users when updates are available. The service worker is registered in main.tsx and the notification component is integrated into the App component.
 
 ### Task 3: Enhance for Offline Use
 
@@ -110,4 +112,4 @@ After each task is completed and approved, update this markdown document (`PWA/d
 
 ## Next Steps
 
-Task 1 has been completed. Ready to proceed with Task 2: Implement Service Worker.
+Tasks 1 and 2 have been completed. Ready to proceed with Task 3: Enhance for Offline Use.
