@@ -9,6 +9,7 @@ window.addEventListener("message", (event) => {
     "https://test.delacasa.app",
     "http://localhost:8000", // Use http for localhost
     "http://localhost:5000", // Use http for localhost
+    "https://localhost:7106",
   ];
 
   // Check if the origin of the message is in the allowed origins list
