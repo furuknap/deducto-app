@@ -1,8 +1,14 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { 
+  User, 
+  getAuthUser, 
+  saveAuthUser, 
+  clearAuthUser, 
+  validateCredentials, 
+  registerUser 
+} from "@/utils/authStorage";
 
 type AuthContextType = {
   user: User | null;
@@ -19,22 +25,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for active session
+    // Check for active session in localStorage
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user || null);
+      const storedUser = getAuthUser();
+      setUser(storedUser);
       setLoading(false);
-      
-      // Listen for auth changes
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          setUser(session?.user || null);
-        }
-      );
-      
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
     };
     
     checkSession();
@@ -42,12 +37,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const user = validateCredentials(email, password);
       
-      if (error) throw error;
+      if (!user) throw new Error("Invalid email or password");
+      
+      // Save user to localStorage
+      saveAuthUser(user);
+      setUser(user);
     } catch (error: any) {
       toast({
         title: "Error signing in",
@@ -60,16 +56,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const user = registerUser(email, password);
       
-      if (error) throw error;
-      
+      // Don't automatically sign in after registration
       toast({
         title: "Success",
-        description: "Check your email for the confirmation link",
+        description: "Account created successfully",
       });
     } catch (error: any) {
       toast({
@@ -83,8 +75,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      clearAuthUser();
+      setUser(null);
     } catch (error: any) {
       toast({
         title: "Error signing out",

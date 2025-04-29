@@ -1,15 +1,7 @@
-
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables } from "@/integrations/supabase/types";
 import { toast } from "@/components/ui/use-toast";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
-
-type Expense = Tables<"expenses"> & {
-  categories: Tables<"categories"> | null;
-};
-
-type Category = Tables<"categories">;
+import { getUserCategories, getUserExpenses, Category, Expense } from "@/utils/dataStorage";
 
 type DateRange = {
   from: Date | undefined;
@@ -65,47 +57,12 @@ export const useExpenses = (userId: string | undefined) => {
       
       console.log("Fetching expenses, authenticated as user ID:", userId);
       
-      // Get the current session to verify authentication
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        throw sessionError;
-      }
+      const userExpenses = getUserExpenses(userId);
+      console.log(`Fetched ${userExpenses.length} expenses for user ${userId}`);
       
-      console.log("Current auth session user:", sessionData.session?.user?.email);
-      
-      // Make sure the RLS policy uses auth.uid() by explicitly setting the user_id filter
-      const { data, error } = await supabase
-        .from("expenses")
-        .select(`
-          *,
-          categories(*)
-        `)
-        .eq("user_id", userId) // Explicitly filter by user_id
-        .order("date", { ascending: false })
-        .limit(50);
-      
-      if (error) {
-        console.error("Error fetching expenses:", error);
-        throw error;
-      }
-      
-      console.log(`Fetched ${data?.length || 0} expenses for user ${userId}`);
-      console.log("First few expenses:", data?.slice(0, 2));
-      
-      // Verify each expense belongs to the current user
-      const validatedExpenses = data?.filter(expense => 
-        expense.user_id === userId
-      ) || [];
-      
-      if (validatedExpenses.length !== data?.length) {
-        console.warn(`Filtered out ${(data?.length || 0) - validatedExpenses.length} expenses that didn't match user ID`);
-      }
-      
-      // Reset states with validated data
-      setExpenses(validatedExpenses);
-      setFilteredExpenses(validatedExpenses);
-      setDateFilteredExpenses(validatedExpenses);
+      setExpenses(userExpenses);
+      setFilteredExpenses(userExpenses);
+      setDateFilteredExpenses(userExpenses);
     } catch (error: any) {
       console.error("Error in fetchExpenses:", error);
       toast({
@@ -129,27 +86,10 @@ export const useExpenses = (userId: string | undefined) => {
       
       console.log("Fetching categories for user ID:", userId);
       
-      // Explicitly filter categories by user_id
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("user_id", userId || '')
-        .order("name", { ascending: true });
+      const userCategories = getUserCategories(userId);
+      console.log(`Fetched ${userCategories.length} categories for user ${userId}`);
       
-      if (error) throw error;
-      
-      console.log(`Fetched ${data?.length || 0} categories for user ${userId}`);
-      
-      // Validate all categories belong to current user
-      const validatedCategories = data?.filter(category => 
-        category.user_id === userId
-      ) || [];
-      
-      if (validatedCategories.length !== data?.length) {
-        console.warn(`Filtered out ${(data?.length || 0) - validatedCategories.length} categories that didn't match user ID`);
-      }
-      
-      setCategories(validatedCategories);
+      setCategories(userCategories);
     } catch (error: any) {
       console.error("Error fetching categories:", error);
       toast({

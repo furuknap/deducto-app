@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Navigation } from "@/components/Navigation";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { requestPasswordReset } from "@/utils/authStorage";
 
 const PasswordReset = () => {
   const [email, setEmail] = useState("");
@@ -19,11 +19,8 @@ const PasswordReset = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/update-password",
-      });
-
-      if (error) throw error;
+      // In a real app, we would call an API here
+      const success = requestPasswordReset(email);
 
       setIsSent(true);
       toast({

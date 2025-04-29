@@ -1,13 +1,13 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Navigation } from "@/components/Navigation";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { getAuthUser, updateUserPassword } from "@/utils/authStorage";
 
 const UpdatePassword = () => {
   const [password, setPassword] = useState("");
@@ -16,20 +16,6 @@ const UpdatePassword = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { t } = useLanguage();
-
-  useEffect(() => {
-    // Check if we have a valid hash parameter indicating a password reset
-    const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      // If no session and no hash parameter, this is not a valid password reset page visit
-      if (!data.session && !window.location.hash) {
-        navigate("/");
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,11 +29,15 @@ const UpdatePassword = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.updateUser({
-        password,
-      });
+      // Get current user
+      const user = getAuthUser();
       
-      if (error) throw error;
+      if (!user) {
+        throw new Error("No authenticated user found");
+      }
+      
+      // Update password in localStorage
+      updateUserPassword(user.id, password);
       
       toast({
         title: t("passwordUpdated"),

@@ -1,19 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { Navigation } from "@/components/Navigation";
-import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { Tables } from "@/integrations/supabase/types";
 import { Trash2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-
-type Category = Tables<"categories">;
+import { getUserCategories, addCategory, deleteCategory, Category } from "@/utils/dataStorage";
 
 const Categories = () => {
   const { user, loading } = useAuth();
@@ -37,20 +33,17 @@ const Categories = () => {
     }
   }, [user, loading, navigate]);
   
-  const fetchCategories = async () => {
+  const fetchCategories = () => {
     try {
       setIsLoading(true);
-      console.log("Fetching categories for user:", user?.id);
+      if (!user) return;
       
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("user_id", user?.id) // Explicitly filter by user_id
-        .order("name", { ascending: true });
+      console.log("Fetching categories for user:", user.id);
       
-      if (error) throw error;
-      console.log(`Fetched ${data?.length || 0} categories for user ${user?.id}`);
-      setCategories(data || []);
+      const userCategories = getUserCategories(user.id);
+      console.log(`Fetched ${userCategories.length} categories for user ${user.id}`);
+      
+      setCategories(userCategories);
     } catch (error: any) {
       toast({
         title: t("errorFetchingCategories"),
@@ -62,7 +55,7 @@ const Categories = () => {
     }
   };
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user) return;
@@ -70,12 +63,7 @@ const Categories = () => {
     try {
       setIsSubmitting(true);
       
-      const { error } = await supabase.from("categories").insert({
-        name: newCategoryName.trim(),
-        user_id: user.id, // Explicitly set the user_id
-      });
-      
-      if (error) throw error;
+      addCategory(user.id, newCategoryName.trim());
       
       toast({
         title: t("categoryAdded"),
@@ -98,15 +86,13 @@ const Categories = () => {
     }
   };
   
-  const handleDeleteCategory = async (id: string) => {
+  const handleDeleteCategory = (id: string) => {
     try {
-      const { error } = await supabase
-        .from("categories")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", user?.id); // Add user_id filter for extra security
+      if (!user) return;
       
-      if (error) throw error;
+      const success = deleteCategory(user.id, id);
+      
+      if (!success) throw new Error("Failed to delete category");
       
       toast({
         title: t("categoryDeleted"),

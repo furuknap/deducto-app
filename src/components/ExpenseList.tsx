@@ -1,6 +1,5 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tables } from "@/integrations/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { format, parseISO } from "date-fns";
 import { Trash2 } from "lucide-react";
@@ -17,10 +16,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useDeleteExpense } from "@/hooks/useDeleteExpense";
-
-type Expense = Tables<"expenses"> & {
-  categories: Tables<"categories"> | null;
-};
+import { useAuth } from "@/context/AuthContext";
+import { Expense } from "@/utils/dataStorage";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -31,6 +28,7 @@ interface ExpenseListProps {
 
 export const ExpenseList = ({ expenses, isLoading, totalAmount, onExpenseDeleted }: ExpenseListProps) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { deleteExpense, isDeleting } = useDeleteExpense();
@@ -50,8 +48,8 @@ export const ExpenseList = ({ expenses, isLoading, totalAmount, onExpenseDeleted
   };
 
   const confirmDelete = async () => {
-    if (selectedExpense) {
-      await deleteExpense(selectedExpense.id);
+    if (selectedExpense && user) {
+      await deleteExpense(selectedExpense.id, user.id);
       setIsDeleteDialogOpen(false);
       setSelectedExpense(null);
       if (onExpenseDeleted) onExpenseDeleted();
@@ -87,7 +85,6 @@ export const ExpenseList = ({ expenses, isLoading, totalAmount, onExpenseDeleted
       <div className="space-y-2 max-h-[500px] overflow-y-auto">
         {expenses.map((expense) => {
           // Format the date string from the database to display correctly
-          // This ensures we display the date as stored in the database without timezone conversion
           const formattedDate = format(parseISO(expense.date), 'MMM dd, yyyy');
           const isSelected = selectedExpense?.id === expense.id;
           

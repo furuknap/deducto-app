@@ -1,23 +1,20 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+import { deleteExpense } from "@/utils/dataStorage";
 
 export const useDeleteExpense = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { t } = useLanguage();
 
-  const deleteExpense = async (expenseId: string) => {
+  const handleDeleteExpense = async (expenseId: string, userId: string) => {
     try {
       setIsDeleting(true);
       
-      const { error } = await supabase
-        .from("expenses")
-        .delete()
-        .eq("id", expenseId);
+      const success = deleteExpense(userId, expenseId);
       
-      if (error) throw error;
+      if (!success) throw new Error("Failed to delete expense");
       
       toast({
         title: t("expenseDeleted"),
@@ -37,5 +34,5 @@ export const useDeleteExpense = () => {
     }
   };
 
-  return { deleteExpense, isDeleting };
+  return { deleteExpense: handleDeleteExpense, isDeleting };
 };

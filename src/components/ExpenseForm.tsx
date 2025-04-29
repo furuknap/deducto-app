@@ -5,11 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables } from "@/integrations/supabase/types";
 import { useLanguage } from "@/context/LanguageContext";
-
-type Category = Tables<"categories">;
+import { Category, addExpense } from "@/utils/dataStorage";
 
 interface ExpenseFormProps {
   userId: string;
@@ -40,19 +37,16 @@ export const ExpenseForm = ({
     try {
       setIsSubmitting(true);
       
-      const today = new Date();
-      const formattedDate = today.toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0];
       
-      const { error } = await supabase.from("expenses").insert({
-        user_id: userId,
-        amount: parseFloat(amount),
+      addExpense(
+        userId,
+        parseFloat(amount),
         description,
-        category_id: categoryId || null,
-        count: parseInt(count),
-        date: formattedDate,
-      });
-      
-      if (error) throw error;
+        categoryId || null,
+        parseInt(count, 10),
+        today
+      );
       
       toast({
         title: t("expenseAdded"),
