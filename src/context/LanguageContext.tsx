@@ -170,6 +170,8 @@ const baseTranslations = {
     noExpensesInSelectedPeriod: "No expenses in the selected period",
     present: "Present",
     until: "Until",
+    or: "Or",
+    continueOffline: "Continue in offline mode",
   },
   es: {
     appName: "Deducto",
@@ -293,6 +295,8 @@ const baseTranslations = {
     noExpensesInSelectedPeriod: "No hay gastos en el período seleccionado",
     present: "Presente",
     until: "Hasta",
+    or: "O",
+    continueOffline: "Continuar en modo sin conexión",
   },
 };
 
