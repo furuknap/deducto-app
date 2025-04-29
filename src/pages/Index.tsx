@@ -151,7 +151,8 @@ const Index = () => {
                 </CardFooter>
               </form>
 
-              {!networkStatus && (
+              {/* Always show offline option during development for easier testing */}
+              {
                 <div className="px-6 pb-4">
                   <div className="relative my-4">
                     <div className="absolute inset-0 flex items-center">
@@ -172,7 +173,7 @@ const Index = () => {
                     {t("continueOffline")}
                   </Button>
                 </div>
-              )}
+              }
             </TabsContent>
 
             <TabsContent value="signup">
