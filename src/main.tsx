@@ -20,6 +20,9 @@ window.addEventListener("message", (event) => {
       event.data
     );
     // Further processing of the message data will be done in subsequent tasks
+    if (event.data === "backup") {
+      console.debug("Backup command received from", event.origin);
+    }
   } else {
     console.warn("Message received from unauthorized origin:", event.origin);
   }
