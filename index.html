@@ -7,17 +7,33 @@
     <meta name="description" content="Track and manage your expenses with Deducto by DeLaCasa.app" />
     <meta name="author" content="DeLaCasa.app" />
 
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#007bff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Deducto" />
+    <link rel="apple-touch-icon" href="/deducto-192.svg" />
+
+    <!-- Social Media Meta Tags -->
     <meta property="og:title" content="Deducto by DeLaCasa.app" />
     <meta property="og:description" content="Track and manage your expenses with Deducto by DeLaCasa.app" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/deducto-192.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="preload" href="/src/main.tsx" as="script" />
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#007bff" />
+    
+    <!-- DNS Prefetch for External Resources -->
+    <link rel="dns-prefetch" href="https://cdn.gpteng.co" />
   </head>
 
   <body>

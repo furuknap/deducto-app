@@ -1,6 +1,6 @@
 // Service Worker for Deducto PWA
-const CACHE_NAME = 'deducto-cache-v2';
-const API_CACHE_NAME = 'deducto-api-cache-v1';
+const CACHE_NAME = 'deducto-cache-v3';
+const API_CACHE_NAME = 'deducto-api-cache-v2';
 const BACKGROUND_SYNC_TAG = 'deducto-sync';
 
 // Assets to cache on install
@@ -10,9 +10,18 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
   '/deducto-192.svg',
-  '/placeholder.svg',
-  // Add CSS and JS files that will be generated at build time
-  // These paths will be determined by the build process
+  '/placeholder.svg'
+];
+
+// Assets to cache on activation (non-critical)
+const SECONDARY_ASSETS = [
+  // Add secondary assets here
+];
+
+// Critical assets that should be preloaded
+const CRITICAL_ASSETS = [
+  '/',
+  '/index.html'
 ];
 
 // Check if background sync is supported
@@ -21,29 +30,48 @@ const isBackgroundSyncSupported = 'sync' in self.registration;
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => self.skipWaiting())
+    Promise.all([
+      // Cache critical assets first for faster startup
+      caches.open(CACHE_NAME)
+        .then((cache) => {
+          console.log('Caching critical assets');
+          return cache.addAll(CRITICAL_ASSETS);
+        }),
+      // Then cache all static assets
+      caches.open(CACHE_NAME)
+        .then((cache) => {
+          console.log('Caching static assets');
+          return cache.addAll(STATIC_ASSETS);
+        })
+    ])
+    .then(() => self.skipWaiting())
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and cache secondary assets
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
+  const cacheWhitelist = [CACHE_NAME, API_CACHE_NAME];
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            // Delete old caches
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheWhitelist.indexOf(cacheName) === -1) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Cache secondary assets in the background
+      caches.open(CACHE_NAME).then((cache) => {
+        console.log('Caching secondary assets');
+        return cache.addAll(SECONDARY_ASSETS);
+      })
+    ])
+    .then(() => self.clients.claim())
   );
 });
 
@@ -101,38 +129,99 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For non-API requests, use cache-first strategy
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return the response from cache
-        if (response) {
+  // For HTML requests, use network-first strategy to ensure latest content
+  if (event.request.headers.get('Accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone the response to store in cache
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
           return response;
-        }
-
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        // Make network request
-        return fetch(fetchRequest).then(
-          (response) => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Open cache and store the response
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
+        })
+        .catch(() => {
+          // If network fails, try to serve from cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+  
+  // For CSS, JS, and other static assets, use cache-first strategy
+  if (
+    event.request.url.endsWith('.css') ||
+    event.request.url.endsWith('.js') ||
+    event.request.url.endsWith('.svg') ||
+    event.request.url.endsWith('.png') ||
+    event.request.url.endsWith('.jpg') ||
+    event.request.url.endsWith('.jpeg') ||
+    event.request.url.endsWith('.gif')
+  ) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          // Cache hit - return the response from cache
+          if (response) {
+            // Fetch in the background to update cache for next time
+            fetch(event.request)
+              .then(networkResponse => {
+                caches.open(CACHE_NAME)
+                  .then(cache => {
+                    cache.put(event.request, networkResponse);
+                  });
+              })
+              .catch(() => {
+                // Ignore network errors for background updates
               });
-
+            
             return response;
           }
-        );
+          
+          // No cache hit, fetch from network
+          return fetch(event.request)
+            .then(networkResponse => {
+              // Clone the response
+              const responseToCache = networkResponse.clone();
+              
+              // Open cache and store the response
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, responseToCache);
+                });
+              
+              return networkResponse;
+            });
+        })
+    );
+    return;
+  }
+  
+  // For all other requests, use stale-while-revalidate strategy
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // Return cached response immediately if available
+        const fetchPromise = fetch(event.request)
+          .then(networkResponse => {
+            // Update the cache with the new response
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, networkResponse.clone());
+              });
+            return networkResponse;
+          })
+          .catch(error => {
+            console.error('Fetch failed:', error);
+            // If both cache and network fail, throw error
+            if (!cachedResponse) {
+              throw error;
+            }
+          });
+        
+        return cachedResponse || fetchPromise;
       })
   );
 });
