@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { DataImportExport } from "./DataImportExport";
 
 export function Navigation() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export function Navigation() {
       </div>
       
       <div className="flex items-center space-x-3">
+        <DataImportExport />
         <LanguageSwitcher />
       </div>
     </nav>
