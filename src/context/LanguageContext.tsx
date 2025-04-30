@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -141,6 +140,19 @@ const translations = {
     expenseDeleted: "Expense Deleted",
     expenseDeletedMessage: "The expense has been successfully deleted.",
     errorDeletingExpense: "Error Deleting Expense",
+    importExport: "Import/Export",
+    dataImportExport: "Data Import/Export",
+    exportImportDescription: "Export your data for backup or import previously exported data.",
+    exportData: "Export Data",
+    importData: "Import Data",
+    cancel: "Cancel",
+    exportSuccessful: "Export Successful",
+    dataExportedToFile: "Your data has been exported to a file.",
+    importSuccessful: "Import Successful",
+    dataImportedSuccessfully: "Your data has been imported successfully.",
+    importFailed: "Import Failed",
+    invalidFileFormat: "The file format is invalid or corrupted.",
+    errorReadingFile: "There was an error reading the file."
   },
   es: {
     appName: "Deducto",
@@ -241,6 +253,18 @@ const translations = {
     expenseDeleted: "Gasto Eliminado",
     expenseDeletedMessage: "El gasto ha sido eliminado con éxito.",
     errorDeletingExpense: "Error al Eliminar el Gasto",
+    importExport: "Importar/Exportar",
+    dataImportExport: "Importar/Exportar Datos",
+    exportImportDescription: "Exporta tus datos para respaldo o importa datos previamente exportados.",
+    exportData: "Exportar Datos",
+    importData: "Importar Datos",
+    cancel: "Cancelar",
+    exportSuccessful: "Exportación Exitosa",
+    dataExportedToFile: "Tus datos han sido exportados a un archivo.",
+    importSuccessful: "Importación Exitosa",
+    dataImportedSuccessfully: "Tus datos han sido importados con éxito.",
+    importFailed: "Fallo en la Importación",
+    invalidFileFormat: "El formato del archivo es inválido o está corrupto.",
+    errorReadingFile: "Hubo un error al leer el archivo."
   }
 };
-
