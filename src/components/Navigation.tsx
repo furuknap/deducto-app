@@ -27,9 +27,6 @@ export function Navigation() {
       
       <div className="flex items-center space-x-3">
         <LanguageSwitcher />
-        <span className="text-sm text-gray-500">
-          {user.email}
-        </span>
       </div>
     </nav>
   );
