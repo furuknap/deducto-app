@@ -1,6 +1,6 @@
 
 import { saveToStorage } from './localStorage';
-import { User } from './authStorage';
+import { User } from '../context/AuthContext';
 import { Category, Expense } from './dataStorage';
 
 /**
@@ -9,19 +9,9 @@ import { Category, Expense } from './dataStorage';
 export const initializeTestData = () => {
   // Create a test user
   const testUser: User = {
-    id: 'test_user_1',
-    email: 'test@example.com'
+    id: 'default_user',
+    email: 'user@example.com'
   };
-  
-  // Add to registered users
-  const users = [testUser];
-  saveToStorage('registered_users', users);
-  
-  // Set password for test user
-  const passwords: Record<string, string> = {
-    [testUser.id]: 'password123'
-  };
-  saveToStorage('user_passwords', passwords);
   
   // Create some categories
   const categories: Category[] = [
@@ -90,16 +80,12 @@ export const initializeTestData = () => {
   saveToStorage(`user_expenses_${testUser.id}`, expenses);
   
   console.log('Test data initialized!');
-  return {
-    testUser,
-    testPassword: 'password123'
-  };
 };
 
 /**
  * Check if application has been initialized with test data
  */
 export const isTestDataInitialized = (): boolean => {
-  const users = localStorage.getItem('registered_users');
-  return users !== null && users.includes('test_user_1');
+  const categories = localStorage.getItem('user_categories_default_user');
+  return categories !== null;
 };

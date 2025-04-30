@@ -2,6 +2,12 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { initializeTestData, isTestDataInitialized } from "./utils/initializeTestData.ts";
+
+// Initialize test data if not already done
+if (!isTestDataInitialized()) {
+  initializeTestData();
+}
 
 // Add message listener for inter-window communication
 window.addEventListener("message", (event) => {
@@ -30,4 +36,5 @@ window.addEventListener("message", (event) => {
     console.warn("Message received from unauthorized origin:", event.origin);
   }
 });
+
 createRoot(document.getElementById("root")!).render(<App />);

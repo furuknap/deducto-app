@@ -1,6 +1,4 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { Navigation } from "@/components/Navigation";
@@ -13,8 +11,7 @@ import { ExpenseChart } from "@/components/ExpenseChart";
 import { useExpenses } from "@/hooks/useExpenses";
 
 const Dashboard = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const { t } = useLanguage();
   
   const {
@@ -29,24 +26,7 @@ const Dashboard = () => {
     fetchExpenses,
     handleDateRangeChange,
     handleCategoryChange
-  } = useExpenses(user?.id);
-  
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/");
-    }
-  }, [user, loading, navigate]);
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navigation />
-        <div className="container mx-auto py-8 flex-1">
-          <p>{t("loading")}</p>
-        </div>
-      </div>
-    );
-  }
+  } = useExpenses(user.id);
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -59,14 +39,12 @@ const Dashboard = () => {
               <CardTitle>{t("addNewExpense")}</CardTitle>
             </CardHeader>
             <CardContent>
-              {user && (
-                <ExpenseForm 
-                  userId={user.id}
-                  categories={categories}
-                  isLoadingCategories={isLoadingCategories}
-                  onExpenseAdded={fetchExpenses}
-                />
-              )}
+              <ExpenseForm 
+                userId={user.id}
+                categories={categories}
+                isLoadingCategories={isLoadingCategories}
+                onExpenseAdded={fetchExpenses}
+              />
             </CardContent>
           </Card>
           
@@ -97,7 +75,7 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Move the chart to the bottom of the page */}
+        {/* Chart at the bottom of the page */}
         <div className="mt-6">
           <ExpenseChart 
             expenses={filteredExpenses}
