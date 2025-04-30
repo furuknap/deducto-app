@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type Language = "en" | "es";
@@ -145,7 +146,7 @@ const translations = {
     exportImportDescription: "Export your data for backup or import previously exported data.",
     exportData: "Export Data",
     importData: "Import Data",
-    cancel: "Cancel",
+    closeDialog: "Cancel",
     exportSuccessful: "Export Successful",
     dataExportedToFile: "Your data has been exported to a file.",
     importSuccessful: "Import Successful",
@@ -258,7 +259,7 @@ const translations = {
     exportImportDescription: "Exporta tus datos para respaldo o importa datos previamente exportados.",
     exportData: "Exportar Datos",
     importData: "Importar Datos",
-    cancel: "Cancelar",
+    closeDialog: "Cancelar",
     exportSuccessful: "Exportación Exitosa",
     dataExportedToFile: "Tus datos han sido exportados a un archivo.",
     importSuccessful: "Importación Exitosa",

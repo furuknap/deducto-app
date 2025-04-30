@@ -144,7 +144,7 @@ export const DataImportExport = ({ onDataUpdated }: DataImportExportProps) => {
           
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>
-              {t("cancel")}
+              {t("closeDialog")}
             </Button>
           </DialogFooter>
         </DialogContent>
