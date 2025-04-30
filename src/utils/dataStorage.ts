@@ -1,6 +1,6 @@
 
 import { saveToStorage, getFromStorage } from './localStorage';
-import { User } from './authStorage';
+import { User } from '../context/AuthContext';
 
 // Type definitions based on Supabase types
 export interface Category {
