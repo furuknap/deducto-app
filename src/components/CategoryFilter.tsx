@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { Filter } from "lucide-react";
-import { Tables } from "@/integrations/supabase/types";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,11 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
-
-type Category = Tables<"categories">;
-type Expense = Tables<"expenses"> & {
-  categories: Tables<"categories"> | null;
-};
+import { Expense, Category } from "@/utils/dataStorage";
 
 interface CategoryFilterProps {
   expenses: Expense[];
